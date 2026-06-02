@@ -1,0 +1,38 @@
+{
+  "name": "AI Workshop",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss"
+      ],
+      "settings": {
+        "github.copilot.enable": {
+          "*": true
+        },
+        "editor.inlineSuggest.enabled": true,
+        "editor.formatOnSave": true
+      }
+    }
+  },
+  "postCreateCommand": "cd block-a-vibe-coding/app && npm install && cd ../../block-b-agent-build/app && npm install",
+  "forwardPorts": [3000, 8000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Frontend",
+      "onAutoForward": "openPreview"
+    },
+    "8000": {
+      "label": "API"
+    }
+  }
+}
