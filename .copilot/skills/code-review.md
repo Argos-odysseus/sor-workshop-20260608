@@ -1,3 +1,8 @@
+---
+name: code-review
+description: "Use when: reviewing code against a spec, verifying acceptance criteria, pre-PR review, code review checklist, Stage 2.5 self-review. Validates implementation satisfies every criterion in a feature spec and produces a ✅/⚠️/❌ report."
+---
+
 # Skill: Code Review Against Spec
 
 - **When to use:** After implementing a feature, before opening a pull request. Use this to verify your code satisfies every acceptance criterion in the spec.

@@ -1,3 +1,8 @@
+---
+name: test-generation
+description: "Use when: generating tests, writing test suites, adding tests to untested code, creating meaningful test coverage. Produces Jest/Vitest test files from source modules."
+---
+
 # Skill: Test Generation
 
 - **When to use:** After implementing a module or function, when you need a meaningful test suite rather than boilerplate coverage. Also useful when adding tests to untested legacy code.
