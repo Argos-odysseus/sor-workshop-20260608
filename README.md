@@ -20,9 +20,9 @@ Open this repo in a GitHub Codespace — everything installs automatically via t
 
 ```
 workshop-ai-dev/
-├── .copilot/skills/       ← reusable Copilot prompt skills
-├── .devcontainer/         ← Codespace configuration
+├── .copilot/skills/       ← reusable Copilot skills (/code-review, /test-generation)
 ├── .github/
+│   ├── agents/             ← custom agents (@spec-interrogator, @pair-programmer)
 │   └── copilot-instructions.md
 ├── block-a-vibe-coding/
 ├── block-b-agent-build/
@@ -53,17 +53,25 @@ npm test         # Run the test suite
 
 ## Copilot Skills
 
-The `.copilot/skills/` folder contains reusable prompt files you can paste into Copilot Chat:
+The `.copilot/skills/` folder contains reusable skills — invoke them as slash commands in Copilot Chat:
 
-| Skill | When to use |
+| Skill | Command | When to use |
+|---|---|---|
+| `code-review` | `/code-review` | After implementing — checklist review against the spec (✅ / ⚠️ / ❌) |
+| `test-generation` | `/test-generation` | When adding coverage — generate meaningful tests with edge cases |
+
+## Copilot Agents
+
+The `.github/agents/` folder contains custom agents — switch to them from the agent picker in Copilot Chat:
+
+| Agent | When to use |
 |---|---|
-| `spec-interrogation.md` | Before implementing — let Copilot interview you to produce a frozen spec |
-| `code-review.md` | After implementing — checklist review against the spec (✅ / ⚠️ / ❌) |
-| `conventional-commit.md` | When staging changes — generate a well-formed commit message |
-| `test-generation.md` | When adding coverage — generate meaningful tests with edge cases |
+| `@spec-interrogator` | Stage 0 — multi-turn interview to produce a frozen feature spec before coding |
+| `@pair-programmer` | Stage 1 — Socratic navigator that asks technical questions about your implementation (never writes code) |
 
 ## Copilot Tips
 
 - Open `.github/copilot-instructions.md` to see the project conventions Copilot has been given — understanding these helps you write better prompts.
-- Use **Copilot Chat** (`Ctrl+Shift+I`) to ask questions about the codebase before writing code: *"What does EnergyService.getReadingsForHouse return?"*
+- Use the **agent picker** in Copilot Chat to switch between `@spec-interrogator` (spec work) and `@pair-programmer` (implementation thinking).
+- Type `/` in Copilot Chat to see available skills like `/code-review` and `/test-generation`.
 - When asking Copilot to implement a feature, include the acceptance criteria and the error format (`{ error, code }`) in your prompt to get output that matches the project style on the first attempt.

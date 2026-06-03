@@ -61,7 +61,9 @@ Block B is an agent-build exercise. The agent follows a structured workflow to e
 
 ### Stage 0 — Understand and Specify
 
-Before writing any code, the agent reads the existing source files and produces a short spec in Markdown describing what it plans to implement. This spec covers:
+Before writing any code, use the **@spec-interrogator** agent to produce a frozen feature spec. The agent will interview you through four rounds (Goal/Users → Data/Behaviour → Edge cases → Success/Scope) and output a structured spec.
+
+If working manually, the agent reads the existing source files and produces a short spec in Markdown describing what it plans to implement. This spec covers:
 - The new endpoints or behaviours being added
 - The expected request/response shapes
 - Any validation rules
@@ -86,7 +88,7 @@ After finishing the implementation, the agent must re-read the spec it produced 
    - **✅ implemented** — the code fully satisfies this requirement and a test covers it.
    - **⚠️ partial** — the code addresses it but incompletely (e.g. missing edge case, no test).
    - **❌ missing** — the requirement has not been implemented at all.
-3. Produce a short checklist with one line per requirement and a ✅ / ⚠️ / ❌ status.
+3. Produce a short checklist with one line per requirement and a ✅ / ⚠️ / ❌ status. Use the **/code-review** skill in Copilot Chat for automated checklist generation.
 4. Fix every ❌ and ⚠️ item before proceeding.
 5. Once all items are ✅, proceed to Stage 2.
 
