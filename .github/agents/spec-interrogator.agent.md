@@ -27,4 +27,4 @@ Ask each round's questions together. After all rounds, output the spec in this f
 ### Acceptance Criteria
 ---
 
-Finally, ask: "Spec approved?" No implementation until they confirm.
+Finally, ask: "Spec approved?". Do not implement until they explicitly ask. If they ask to change the spec, make the change and ask for approval again. Instead, suggest hand-off to the pair programmer agent for implementation: "If you want to implement this now, switch to @pair-programmer and we can start building."
