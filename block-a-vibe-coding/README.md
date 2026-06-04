@@ -4,7 +4,7 @@
 
 ## What this is
 
-A working React + TypeScript frontend with four parking zones (P1, P2, P3, EXPRESS), a booking form, and a booking list with cancellation. All state is in-memory — no backend.
+A React + TypeScript frontend with four parking zones (P1, P2, P3, EXPRESS). The zone grid is implemented and ready. The booking form and booking list are intentionally left out — adding them is your workshop task.
 
 ## Start the app
 
@@ -21,6 +21,8 @@ Extend the app using **vibe coding** — describe what you want in plain languag
 
 Suggestions (pick any, or invent your own):
 
+- **Booking form** — add a form to book a selected zone (licence plate, arrival date, departure date)
+- **Booking list** — show active bookings with a cancel button
 - **Price estimate** — show total cost when a user fills in arrival/departure dates
 - **Date validation** — prevent departure before arrival, or arrival in the past
 - **Filter/sort zones** — by price, distance, or availability
@@ -39,11 +41,11 @@ Suggestions (pick any, or invent your own):
 
 | File | Purpose |
 |---|---|
-| `src/App.tsx` | Root component — wires zones, bookings, and form together |
-| `src/hooks/useBookings.ts` | All state: zones, bookings, `addBooking`, `cancelBooking` |
+| `src/App.tsx` | Root component — renders the zone grid |
+| `src/hooks/useBookings.ts` | State: zones, bookings, `addBooking`, `cancelBooking` |
 | `src/components/ZoneCard.tsx` | Displays a single parking zone |
-| `src/components/BookingForm.tsx` | Form for new bookings |
-| `src/components/BookingList.tsx` | List of active bookings with cancel |
+| `src/components/BookingForm.tsx` | Booking form component (not yet wired up) |
+| `src/components/BookingList.tsx` | Booking list component (not yet wired up) |
 | `src/types/Booking.ts` | TypeScript types: `Booking`, `ParkingZone`, `ZoneId` |
 
 ## Project conventions

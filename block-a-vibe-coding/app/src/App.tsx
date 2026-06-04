@@ -1,13 +1,8 @@
-import { useState } from 'react';
 import { useBookings } from './hooks/useBookings';
 import { ZoneCard } from './components/ZoneCard';
-import { BookingForm } from './components/BookingForm';
-import { BookingList } from './components/BookingList';
-import type { ZoneId } from './types/Booking';
 
 export default function App() {
-  const { zones, bookings, addBooking, cancelBooking } = useBookings();
-  const [selectedZoneId, setSelectedZoneId] = useState<ZoneId | null>(null);
+  const { zones } = useBookings();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -25,32 +20,11 @@ export default function App() {
               <ZoneCard
                 key={zone.id}
                 zone={zone}
-                onBook={(id) => setSelectedZoneId(id)}
+                onBook={() => {}}
               />
             ))}
           </div>
         </section>
-
-        <section>
-          <BookingForm
-            zones={zones}
-            selectedZoneId={selectedZoneId}
-            onSubmit={(zoneId, licensePlate, arrivalDate, departureDate) => {
-              addBooking(zoneId, licensePlate, arrivalDate, departureDate);
-              setSelectedZoneId(null);
-            }}
-          />
-        </section>
-
-        {bookings.length > 0 && (
-          <section>
-            <BookingList
-              bookings={bookings}
-              zones={zones}
-              onCancel={cancelBooking}
-            />
-          </section>
-        )}
 
       </main>
     </div>
