@@ -24,3 +24,35 @@ description: "Use when: clean up unused code, find dead exports, audit unused fi
    - **TODOs / FIXMEs** — grep for `TODO` and `FIXME` in source files
 
 4. Output the report in this exact format — nothing else:
+
+```
+## Dead Code Report
+
+### Unused Exports
+| File | Export | Reason |
+|------|--------|--------|
+| path/to/file.ts | `exportName` | No import sites found |
+
+### Unreachable Files
+| File | Reason |
+|------|--------|
+| path/to/file.ts | Not imported anywhere; not an entry point |
+
+### TODOs / FIXMEs
+| File | Line | Comment |
+|------|------|---------|
+| path/to/file.ts | 42 | TODO: replace with structured logger |
+
+### Summary
+- Unused exports: N
+- Unreachable files: N
+- TODOs/FIXMEs: N
+```
+
+If all three sections are empty, output:
+
+```
+## Dead Code Report
+
+No unused exports, unreachable files, or TODO/FIXME comments found. Codebase is clean.
+```

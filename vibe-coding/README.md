@@ -37,6 +37,13 @@ Suggestions (pick any, or invent your own):
 3. Review what Copilot does. Accept or adjust.
 4. Repeat — build up features incrementally.
 
+> **Full agentic workflow:** For a structured Stage 0 → 1 → 2.5 → 2 workflow with copy-paste starter prompts, open [`.github/prompts/block-a-workflow.prompt.md`](../.github/prompts/block-a-workflow.prompt.md) in Copilot Chat or read it directly.
+
+**Tips**
+- Reference existing code: "use the existing `useBookings` hook", "follow the same pattern as `ZoneCard.tsx`".
+- Small steps beat big prompts: build the shell first, then add validation, then wire state.
+- Use **@pair-programmer** when unsure about a design decision — it asks the right questions without writing the code.
+
 ## Codebase at a glance
 
 | File | Purpose |

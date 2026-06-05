@@ -45,13 +45,30 @@ Switch to **`@pair-programmer`** while you write code. It acts as your navigator
 Use the **`/code-review`** skill to run a checklist of your implementation against the spec. Fix every ❌ and ⚠️ before continuing.
 
 ### Stage 2 — Commit
-Use the **`/test-generation`** skill if you need to fill coverage gaps, then branch and commit:
+Optionally run **`/dead-code-scanner`** to find unused exports before committing. Use the **`/test-generation`** skill if you need to fill coverage gaps, then branch and commit:
 
 ```bash
 git checkout -b feat/<short-description>
 git add .
 git commit -m "feat: <what you built>"
 ```
+
+## Bonus: Find the bug
+
+There is a validation gap in the starter code. The `POST /houses/:id/readings` endpoint accepts a `timestamp` field but does **not** validate that it is a valid ISO 8601 date string. A request like:
+
+```json
+{ "kwh": 4.2, "timestamp": "not-a-date" }
+```
+
+… returns `201 Created`. That data is then silently broken for any date-range filter.
+
+**Task:** Use AI to find and fix it.
+
+1. Open **`@pair-programmer`** and describe the symptom: *"The readings endpoint accepts invalid timestamps. Walk me through finding where the validation is missing."*
+2. Once you know the gap, use Copilot agent mode to add a validation check. Invalid ISO timestamps should return `400` with `{ error: "...", code: "VALIDATION_ERROR" }`.
+3. Write a test: `it('returns 400 when timestamp is not a valid ISO date')`.
+4. Use **`/code-review`** to verify your fix covers the edge cases.
 
 ## Codebase at a glance
 

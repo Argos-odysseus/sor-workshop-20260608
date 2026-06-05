@@ -16,7 +16,7 @@ Open this repo in a GitHub Codespace — everything installs automatically via t
 |---|---|---|---|
 | A — Vibe Coding | `vibe-coding/app` | React 18, TypeScript, Vite, Tailwind | Parking booking site — Gardermoen Parkering |
 | B — Agent Build | `agent/app` | Express, TypeScript, Jest | Energy consumption API for households |
-| C — Issue Pipeline | *(same as Block B)* | Express, TypeScript, Jest | Autonomous agents implements a GitHub Issue |
+| C — Issue Pipeline | *(same as Block B)* | Express, TypeScript, Jest | Autonomous agents implement a GitHub Issue |
 
 ```
 sor-workshop-20260608/

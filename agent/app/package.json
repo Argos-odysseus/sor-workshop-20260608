@@ -1,5 +1,5 @@
 {
-  "name": "task-api-workshop",
+  "name": "energy-api-workshop",
   "version": "1.0.0",
   "scripts": {
     "dev": "ts-node-dev --respawn src/index.ts",
