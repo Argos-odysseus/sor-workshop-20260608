@@ -30,6 +30,46 @@ sor-workshop-20260608/
 └── README.md
 ```
 
+### Root
+
+| File | Purpose |
+|---|---|
+| `README.md` | This file — workshop overview, quick-start, block descriptions, and repo structure |
+| `.gitignore` | Excludes build outputs, `node_modules`, env files, and IDE artifacts from version control |
+| `.copilotignore` | Excludes `node_modules`, `dist`, `coverage`, and lock files from Copilot context to keep token usage low |
+
+### `.devcontainer/`
+
+| File | Purpose |
+|---|---|
+| `devcontainer.json` | Dev container config — Node.js 20, Copilot/ESLint/Prettier/Tailwind extensions, and post-create `npm install` for both app directories |
+
+### `.github/`
+
+| File | Purpose |
+|---|---|
+| `copilot-instructions.md` | Global code conventions sent to Copilot on every session — TypeScript strict mode, named exports, `const` over `let`, conventional commits, branch/PR rules |
+| `agents/spec-interrogator.agent.md` | `@spec-interrogator` — multi-turn interview agent that produces a frozen feature spec before any code is written |
+| `agents/pair-programmer.agent.md` | `@pair-programmer` — Socratic navigator that asks technical questions about your implementation; never writes code |
+| `agents/pr-readiness-gate.agent.md` | `@pr-readiness-gate` — autonomously builds, tests, and lints; outputs a go/no-go decision before merge |
+| `instructions/block-a.instructions.md` | Per-block Copilot instructions scoped to `vibe-coding/**` — React/Tailwind conventions for Block A |
+| `instructions/block-b.instructions.md` | Per-block Copilot instructions scoped to `agent/**` — Express/Jest conventions for Block B |
+| `prompts/block-b-workflow.prompt.md` | Reusable prompt for the Block B agentic workflow — guides Copilot through Spec → Implement → Review → Commit |
+
+### `.copilot/skills/`
+
+| File | Purpose |
+|---|---|
+| `code-review.md` | `/code-review` skill — runs a pass/warn/fail checklist of your implementation against the spec |
+| `test-generation.md` | `/test-generation` skill — generates tests with real edge cases matching the project's existing test style |
+| `dead-code-scanner.md` | `/dead-code-scanner` skill — finds unused exports, unreferenced files, and TODO/FIXME comments across the repo |
+
+### `.vscode/`
+
+| File | Purpose |
+|---|---|
+| `settings.json` | Workspace settings — editor formatting, Copilot inline suggestions, and language/tool configurations |
+
 ## Getting Started
 
 ### Block A — Gardermoen Parkering

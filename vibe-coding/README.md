@@ -44,8 +44,6 @@ Suggestions (pick any, or invent your own):
 | `src/App.tsx` | Root component — renders the zone grid |
 | `src/hooks/useBookings.ts` | State: zones, bookings, `addBooking`, `cancelBooking` |
 | `src/components/ZoneCard.tsx` | Displays a single parking zone |
-| `src/components/BookingForm.tsx` | Booking form component (not yet wired up) |
-| `src/components/BookingList.tsx` | Booking list component (not yet wired up) |
 | `src/types/Booking.ts` | TypeScript types: `Booking`, `ParkingZone`, `ZoneId` |
 
 ## Project conventions
