@@ -24,7 +24,7 @@
       }
     }
   },
-  "postCreateCommand": "cd block-a-vibe-coding/app && npm install && cd ../../block-b-agent-build/app && npm install",
+  "postCreateCommand": "cd vibe-coding/app && npm install && cd ../../agent/app && npm install",
   "forwardPorts": [3000, 8000],
   "portsAttributes": {
     "3000": {

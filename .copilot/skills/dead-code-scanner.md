@@ -1,6 +1,6 @@
 ---
 name: dead-code-scanner
-description: "Use when: clean up unused code, find dead exports, audit unused files, dead code report. Scans block-a and block-b source trees and produces a structured report."
+description: "Use when: clean up unused code, find dead exports, audit unused files, dead code report. Scans vibe-coding and agent source trees and produces a structured report."
 ---
 
 # Dead Code Scanner
@@ -13,8 +13,8 @@ description: "Use when: clean up unused code, find dead exports, audit unused fi
 ## Procedure
 
 1. List all `.ts` / `.tsx` source files under:
-   - `block-a-vibe-coding/app/src`
-   - `block-b-agent-build/app/src`
+   - `vibe-coding/app/src`
+   - `agent/app/src`
 
 2. For every named export in each file, search the workspace for import references to it.
 

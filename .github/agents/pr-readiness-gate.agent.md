@@ -8,12 +8,12 @@ You are a CI pre-flight agent. When invoked, execute the checks below immediatel
 
 ## Checks (run in order)
 
-### Block B — block-b-agent-build/app
+### Block B — agent/app
 1. `npm run build` — TypeScript must compile with zero errors.
 2. `npm test` — all Jest tests must pass.
 3. Scan `src/**/*.ts` for `console.log` calls left in source (not test files).
 
-### Block A — block-a-vibe-coding/app
+### Block A — vibe-coding/app
 4. `npm run build` — Vite + TypeScript must build with zero errors.
 5. Scan `src/**/*.tsx` for `console.log` calls left in source.
 

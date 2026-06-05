@@ -10,8 +10,8 @@ This is a workshop monorepo demonstrating agentic and AI-assisted development wo
 
 | Directory | Block | Purpose |
 |---|---|---|
-| `block-a-vibe-coding/app` | Block A | React + Tailwind frontend — vibe coding exercise |
-| `block-b-agent-build/app` | Block B | Express + TypeScript energy consumption API — agent-build exercise |
+| `vibe-coding/app` | Block A | React + Tailwind frontend — vibe coding exercise |
+| `agent/app` | Block B | Express + TypeScript energy consumption API — agent exercise |
 | `block-c-*` | Block C | Extension of Block B — review and hardening exercise |
 
 TypeScript is used throughout. There is no shared package between blocks; each has its own `package.json`.

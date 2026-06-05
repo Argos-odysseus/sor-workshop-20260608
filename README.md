@@ -14,18 +14,19 @@ Open this repo in a GitHub Codespace — everything installs automatically via t
 
 | Block | Directory | Stack | Scenario |
 |---|---|---|---|
-| A — Vibe Coding | `block-a-vibe-coding/app` | React 18, TypeScript, Vite, Tailwind | Parking booking site — Gardermoen Parkering |
-| B — Agent Build | `block-b-agent-build/app` | Express, TypeScript, Jest | Energy consumption API for households |
-| C — Issue Pipeline | *(same as Block B)* | Express, TypeScript, Jest | Autonomous Copilot agent implements a GitHub Issue |
+| A — Vibe Coding | `vibe-coding/app` | React 18, TypeScript, Vite, Tailwind | Parking booking site — Gardermoen Parkering |
+| B — Agent Build | `agent/app` | Express, TypeScript, Jest | Energy consumption API for households |
+| C — Issue Pipeline | *(same as Block B)* | Express, TypeScript, Jest | Autonomous agents implements a GitHub Issue |
 
 ```
-workshop-ai-dev/
-├── .copilot/skills/       ← reusable Copilot skills (/code-review, /test-generation)
+sor-workshop-20260608/
+├── .copilot/skills/       ← reusable Copilot skills (/code-review, /test-generation, /dead-code-scanner)
 ├── .github/
-│   ├── agents/             ← custom agents (@spec-interrogator, @pair-programmer)
+│   ├── agents/             ← custom agents (@spec-interrogator, @pair-programmer, @pr-readiness-gate)
+│   ├── instructions/       ← per-block Copilot instructions (vibe-coding, agent)
 │   └── copilot-instructions.md
-├── block-a-vibe-coding/
-├── block-b-agent-build/
+├── vibe-coding/
+├── agent/
 └── README.md
 ```
 
@@ -36,7 +37,7 @@ workshop-ai-dev/
 A parking booking site with pre-seeded zones (P1/P2/P3/EXPRESS) and bookings. Use vibe coding to extend it.
 
 ```bash
-cd block-a-vibe-coding/app
+cd vibe-coding/app
 npm run dev
 # App available at http://localhost:3000
 ```
@@ -46,7 +47,7 @@ npm run dev
 An Express REST API with houses and hourly energy readings. Basic CRUD is working; date filtering, aggregation, and summary endpoints are intentionally missing — your job is to add them using the agentic workflow.
 
 ```bash
-cd block-b-agent-build/app
+cd agent/app
 npm run dev      # API available at http://localhost:8000
 npm test         # Run the test suite
 ```
@@ -59,6 +60,7 @@ The `.copilot/skills/` folder contains reusable skills — invoke them as slash 
 |---|---|---|
 | `code-review` | `/code-review` | After implementing — checklist review against the spec (✅ / ⚠️ / ❌) |
 | `test-generation` | `/test-generation` | When adding coverage — generate meaningful tests with edge cases |
+| `dead-code-scanner` | `/dead-code-scanner` | Find unused exports, unreachable code, and dead branches |
 
 ## Copilot Agents
 
@@ -68,6 +70,7 @@ The `.github/agents/` folder contains custom agents — switch to them from the 
 |---|---|
 | `@spec-interrogator` | Stage 0 — multi-turn interview to produce a frozen feature spec before coding |
 | `@pair-programmer` | Stage 1 — Socratic navigator that asks technical questions about your implementation (never writes code) |
+| `@pr-readiness-gate` | Pre-merge — autonomously builds, tests, and lints; outputs a go/no-go decision |
 
 ## Copilot Tips
 

@@ -9,7 +9,7 @@ A working Express + TypeScript API with three pre-seeded houses and 24 hourly re
 ## Start the API
 
 ```bash
-cd block-b-agent-build/app
+cd agent/app
 npm install
 npm run dev    # API at http://localhost:8000
 npm test       # Run the test suite

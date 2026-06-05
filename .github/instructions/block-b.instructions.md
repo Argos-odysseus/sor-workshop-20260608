@@ -1,5 +1,5 @@
 ---
-applyTo: block-b-agent-build/**
+applyTo: agent/**
 ---
 
 ## Block B / C Conventions (Express API)
@@ -21,7 +21,7 @@ applyTo: block-b-agent-build/**
 
 ## Agentic Workflow
 
-Block B is an agent-build exercise. The intentional gaps in the starter code (date range filtering, aggregation, averages) are the features you are expected to implement.
+Block B is an agent exercise. The intentional gaps in the starter code (date range filtering, aggregation, averages) are the features you are expected to implement.
 
 ### Stage 0 — Understand and Specify
 

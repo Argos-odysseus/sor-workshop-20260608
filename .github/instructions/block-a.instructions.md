@@ -1,5 +1,5 @@
 ---
-applyTo: block-a-vibe-coding/**
+applyTo: vibe-coding/**
 ---
 
 ## Block A Conventions (React + Tailwind)
