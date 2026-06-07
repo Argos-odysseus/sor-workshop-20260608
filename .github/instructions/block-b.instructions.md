@@ -1,13 +1,13 @@
 ---
-applyTo: agent/**
+applyTo: renovation/**
 ---
 
-## Block B / C Conventions (Express API)
+## Block B Conventions (Code Renovation)
 
-- The web framework is **Express**. Do not introduce other HTTP frameworks.
-- State is held in **in-memory Maps** (`EnergyService`). Do not add a database or file-system persistence.
-- All error responses must use the shape `{ error: string; code: string }`. The `code` field is a screaming-snake-case identifier (e.g. `HOUSE_NOT_FOUND`, `READING_NOT_FOUND`, `VALIDATION_ERROR`).
-- HTTP semantics: `200` success with body, `201` resource created, `204` no body (delete), `400` validation error, `404` not found, `500` unhandled server error.
-- Every new route or behaviour must have a corresponding test. Do not open a PR with untested code paths.
-- The `kwh` field on a reading must always be a positive number (> 0). Reject invalid values with a 400.
-- Test runner is **Jest** with **ts-jest** and **supertest**. Test files live in `tests/`. Do not mock `energyService` — use the real in-memory store.
+- Start with **vanilla JavaScript (CommonJS)**. Do not introduce TypeScript or ES modules until Stage 2 (Modernize).
+- The codebase intentionally contains bugs, magic numbers, duplicated logic, and missing validation. Do not fix issues during Stage 1 (Understand) — only document them.
+- Use Copilot Chat **Ask mode** for Stage 1 (explain code). Use **Agent mode** for Stage 2 (modernize) and Stage 3 (refactor).
+- All refactored code must use **strict TypeScript**, `const`/`let`, `async/await`, and named exports.
+- Test runner is **Jest** with **ts-jest**. Tests live in `tests/`. Reach 100% coverage on the refactored code.
+- Error responses must use `{ error: string; code: string }` shape. Screaming-snake-case codes (`MEMBER_NOT_FOUND`, `VALIDATION_ERROR`, `PLAN_LIMIT_EXCEEDED`).
+- Extract business logic into service modules (`src/services/`). Route handlers must be thin — validation and logic in services.

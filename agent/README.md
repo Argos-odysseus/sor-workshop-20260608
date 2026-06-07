@@ -1,4 +1,4 @@
-# Block B — Agent Build
+# Block C — Agent Build
 
 **Energy Consumption API** — a REST API for tracking hourly household energy readings.
 
@@ -45,7 +45,7 @@ Switch to **`@pair-programmer`** while you write code. It acts as your navigator
 Use the **`/code-review`** skill to run a checklist of your implementation against the spec. Fix every ❌ and ⚠️ before continuing.
 
 ### Stage 2 — Commit
-Optionally run **`/dead-code-scanner`** to find unused exports before committing. Use the **`/test-generation`** skill if you need to fill coverage gaps, then branch and commit:
+Optionally run **`/dead-code-scanner`** to find unused exports before committing, then branch and commit:
 
 ```bash
 git checkout -b feat/<short-description>

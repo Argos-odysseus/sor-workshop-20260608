@@ -15,18 +15,20 @@ Open this repo in a GitHub Codespace — everything installs automatically via t
 | Block | Directory | Stack | Scenario |
 |---|---|---|---|
 | A — Vibe Coding | `vibe-coding/app` | React 18, TypeScript, Vite, Tailwind | Parking booking site — Gardermoen Parkering |
-| B — Agent Build | `agent/app` | Express, TypeScript, Jest | Energy consumption API for households |
-| C — Issue Pipeline | *(same as Block B)* | Express, TypeScript, Jest | Autonomous agents implement a GitHub Issue |
+| B — Renovation | `renovation/app` | Express → TypeScript, Jest | Legacy gym API — use AI to understand, modernize, and fix |
+| C — Agent Build | `agent/app` | Express, TypeScript, Jest | Energy consumption API for households |
+| D — Issue Pipeline | *(same as Block C)* | Express, TypeScript, Jest | Autonomous agents implement a GitHub Issue |
 
 ```
 sor-workshop-20260608/
-├── .copilot/skills/       ← reusable Copilot skills (/code-review, /test-generation, /dead-code-scanner)
+├── .copilot/skills/       ← reusable Copilot skills (/code-review, /dead-code-scanner)
 ├── .github/
 │   ├── agents/             ← custom agents (@spec-interrogator, @pair-programmer, @pr-readiness-gate)
 │   ├── instructions/       ← per-block Copilot instructions (vibe-coding, agent)
 │   └── copilot-instructions.md
 ├── vibe-coding/
 ├── agent/
+├── renovation/
 └── README.md
 ```
 
@@ -52,16 +54,19 @@ sor-workshop-20260608/
 | `agents/spec-interrogator.agent.md` | `@spec-interrogator` — multi-turn interview agent that produces a frozen feature spec before any code is written |
 | `agents/pair-programmer.agent.md` | `@pair-programmer` — Socratic navigator that asks technical questions about your implementation; never writes code |
 | `agents/pr-readiness-gate.agent.md` | `@pr-readiness-gate` — autonomously builds, tests, and lints; outputs a go/no-go decision before merge |
-| `instructions/block-a.instructions.md` | Per-block Copilot instructions scoped to `vibe-coding/**` — React/Tailwind conventions for Block A |
-| `instructions/block-b.instructions.md` | Per-block Copilot instructions scoped to `agent/**` — Express/Jest conventions for Block B |
-| `prompts/block-b-workflow.prompt.md` | Reusable prompt for the Block B agentic workflow — guides Copilot through Spec → Implement → Review → Commit |
+| `instructions/block-b.instructions.md` | Per-block Copilot instructions scoped to `renovation/**` — renovation conventions for Block B |
+| `instructions/block-c.instructions.md` | Per-block Copilot instructions scoped to `agent/**` — Express/Jest conventions for Block C |
+| `instructions/block-d.instructions.md` | Per-block Copilot instructions scoped to `agent/**` — Express/Jest conventions for Block D |
+| `prompts/block-a-workflow.prompt.md` | Reusable prompt for the Block A vibe-coding workflow |
+| `prompts/block-b-workflow.prompt.md` | Reusable prompt for the Block B renovation workflow — Understand → Modernize → Test → Refactor → Review |
+| `prompts/block-c-workflow.prompt.md` | Reusable prompt for the Block C agentic workflow — guides Copilot through Spec → Implement → Review → Commit |
+| `prompts/block-d-workflow.prompt.md` | Reusable prompt for the Block D issue-pipeline workflow — autonomous agents implement a GitHub Issue |
 
 ### `.copilot/skills/`
 
 | File | Purpose |
 |---|---|
 | `code-review.md` | `/code-review` skill — runs a pass/warn/fail checklist of your implementation against the spec |
-| `test-generation.md` | `/test-generation` skill — generates tests with real edge cases matching the project's existing test style |
 | `dead-code-scanner.md` | `/dead-code-scanner` skill — finds unused exports, unreferenced files, and TODO/FIXME comments across the repo |
 
 ### `.vscode/`
@@ -82,7 +87,19 @@ npm run dev
 # App available at http://localhost:3000
 ```
 
-### Block B / C — Energy Consumption API
+### Block B — Gym Membership API (Renovation)
+
+A deliberately messy Express API for a gym membership system. It works — but barely. Bugs, no types, no tests, `var` everywhere. Your job is to use AI to understand it, modernize it, and refactor it.
+
+```bash
+cd renovation/app
+npm install
+npm run dev      # API available at http://localhost:4000
+```
+
+> **Note:** Block B starts as plain JavaScript (no TypeScript, no tests). Part of the exercise is adding these.
+
+### Block — Energy Consumption API
 
 An Express REST API with houses and hourly energy readings. Basic CRUD is working; date filtering, aggregation, and summary endpoints are intentionally missing — your job is to add them using the agentic workflow.
 
@@ -99,7 +116,6 @@ The `.copilot/skills/` folder contains reusable skills — invoke them as slash 
 | Skill | Command | When to use |
 |---|---|---|
 | `code-review` | `/code-review` | After implementing — checklist review against the spec (✅ / ⚠️ / ❌) |
-| `test-generation` | `/test-generation` | When adding coverage — generate meaningful tests with edge cases |
 | `dead-code-scanner` | `/dead-code-scanner` | Find unused exports, unreachable code, and dead branches |
 
 ## Copilot Agents
@@ -116,5 +132,5 @@ The `.github/agents/` folder contains custom agents — switch to them from the 
 
 - Open `.github/copilot-instructions.md` to see the project conventions Copilot has been given — understanding these helps you write better prompts.
 - Use the **agent picker** in Copilot Chat to switch between `@spec-interrogator` (spec work) and `@pair-programmer` (implementation thinking).
-- Type `/` in Copilot Chat to see available skills like `/code-review` and `/test-generation`.
+- Type `/` in Copilot Chat to see available skills like `/code-review`.
 - When asking Copilot to implement a feature, include the acceptance criteria and the error format (`{ error, code }`) in your prompt to get output that matches the project style on the first attempt.
