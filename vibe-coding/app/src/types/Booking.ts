@@ -16,3 +16,10 @@ export interface Booking {
   departureDate: string;
   createdAt: string;
 }
+
+export interface BookingDraft {
+  zoneId: ZoneId;
+  licensePlate: string;
+  arrivalDate: string;
+  departureDate: string;
+}

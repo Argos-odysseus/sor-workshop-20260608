@@ -1,5 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
-import { House, EnergyReading, CreateReadingDto } from '../types/Energy';
+import {
+  House,
+  EnergyReading,
+  CreateReadingDto,
+  DailyReadingSummary,
+  ReadingSummary,
+} from '../types/Energy';
 
 const houses: Map<string, House> = new Map([
   [
@@ -48,6 +54,59 @@ export const energyService = {
 
   getReadingsForHouse(houseId: string): EnergyReading[] {
     return Array.from(readings.values()).filter((r) => r.houseId === houseId);
+  },
+
+  getReadingsForHouseInRange(
+    houseId: string,
+    from?: string,
+    to?: string,
+  ): EnergyReading[] {
+    const fromTime = from ? new Date(from).getTime() : undefined;
+    const toTime = to ? new Date(to).getTime() : undefined;
+
+    return this.getReadingsForHouse(houseId).filter((reading) => {
+      const readingTime = new Date(reading.timestamp).getTime();
+      return (
+        (fromTime === undefined || readingTime >= fromTime) &&
+        (toTime === undefined || readingTime <= toTime)
+      );
+    });
+  },
+
+  getReadingSummaryForHouse(houseId: string): ReadingSummary {
+    const houseReadings = this.getReadingsForHouse(houseId);
+    const total = houseReadings.reduce((sum, reading) => sum + reading.kwh, 0);
+    const count = houseReadings.length;
+    const average = count > 0 ? total / count : 0;
+    const dailyReadings = new Map<string, EnergyReading[]>();
+
+    houseReadings.forEach((reading) => {
+      const date = reading.timestamp.slice(0, 10);
+      const dayReadings = dailyReadings.get(date) ?? [];
+      dayReadings.push(reading);
+      dailyReadings.set(date, dayReadings);
+    });
+
+    const dailyAverages: DailyReadingSummary[] = Array.from(dailyReadings.entries())
+      .sort(([leftDate], [rightDate]) => leftDate.localeCompare(rightDate))
+      .map(([date, dayReadings]) => {
+        const dayTotal = dayReadings.reduce((sum, reading) => sum + reading.kwh, 0);
+        const dayCount = dayReadings.length;
+
+        return {
+          date,
+          total: dayTotal,
+          average: dayTotal / dayCount,
+          count: dayCount,
+        };
+      });
+
+    return {
+      total,
+      average,
+      count,
+      dailyAverages,
+    };
   },
 
   addReading(dto: CreateReadingDto): EnergyReading {

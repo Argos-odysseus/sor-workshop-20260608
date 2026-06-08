@@ -60,6 +60,71 @@ describe('GET /houses/:id/readings', () => {
     expect(reading).toHaveProperty('timestamp');
     expect(reading).toHaveProperty('kwh');
   });
+
+  it('filters readings by inclusive from and to timestamps', async () => {
+    const allReadings = await request(app).get('/houses/house-001/readings');
+    const selectedReading = allReadings.body[5];
+
+    const res = await request(app)
+      .get('/houses/house-001/readings')
+      .query({ from: selectedReading.timestamp, to: selectedReading.timestamp });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([selectedReading]);
+  });
+
+  it('returns 400 when date filters are not valid ISO timestamps', async () => {
+    const res = await request(app)
+      .get('/houses/house-001/readings')
+      .query({ from: '2026-06-05', to: 'not-a-date' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('returns 400 when from is after to', async () => {
+    const res = await request(app)
+      .get('/houses/house-001/readings')
+      .query({
+        from: '2026-06-06T00:00:00.000Z',
+        to: '2026-06-05T00:00:00.000Z',
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.code).toBe('VALIDATION_ERROR');
+  });
+});
+
+describe('GET /houses/:id/readings/summary', () => {
+  it('returns total, average, count, and daily averages for a house', async () => {
+    const res = await request(app).get('/houses/house-001/readings/summary');
+
+    expect(res.status).toBe(200);
+    expect(res.body.count).toBe(24);
+    expect(res.body.total).toBeCloseTo(36.8);
+    expect(res.body.average).toBeCloseTo(36.8 / 24);
+    expect(res.body.dailyAverages.length).toBeGreaterThan(0);
+    expect(res.body.dailyAverages[0]).toMatchObject({
+      date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+      total: expect.any(Number),
+      average: expect.any(Number),
+      count: expect.any(Number),
+    });
+  });
+
+  it('returns an empty summary for a house with no readings', async () => {
+    const res = await request(app).get('/houses/house-002/readings/summary');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ total: 0, average: 0, count: 0, dailyAverages: [] });
+  });
+
+  it('returns 404 when summary house does not exist', async () => {
+    const res = await request(app).get('/houses/does-not-exist/readings/summary');
+
+    expect(res.status).toBe(404);
+    expect(res.body.code).toBe('HOUSE_NOT_FOUND');
+  });
 });
 
 describe('POST /houses/:id/readings', () => {
@@ -109,6 +174,24 @@ describe('POST /houses/:id/readings', () => {
     const res = await request(app)
       .post('/houses/house-002/readings')
       .send({ kwh: 1.5 });
+    expect(res.status).toBe(400);
+    expect(res.body.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('returns 400 when timestamp is not a valid ISO date', async () => {
+    const res = await request(app)
+      .post('/houses/house-002/readings')
+      .send({ timestamp: 'not-a-date', kwh: 1.5 });
+
+    expect(res.status).toBe(400);
+    expect(res.body.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('returns 400 when timestamp is a loosely parsed date', async () => {
+    const res = await request(app)
+      .post('/houses/house-002/readings')
+      .send({ timestamp: '2026-02-31T10:00:00.000Z', kwh: 1.5 });
+
     expect(res.status).toBe(400);
     expect(res.body.code).toBe('VALIDATION_ERROR');
   });
