@@ -16,3 +16,17 @@ export interface CreateReadingDto {
   timestamp: string;
   kwh: number;
 }
+
+export interface DailyReadingSummary {
+  date: string;
+  total: number;
+  average: number;
+  count: number;
+}
+
+export interface ReadingSummary {
+  total: number;
+  average: number;
+  count: number;
+  dailyAverages: DailyReadingSummary[];
+}
