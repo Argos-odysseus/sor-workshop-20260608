@@ -1,16 +1,10 @@
 ---
-description: Block A vibe-coding workflow — Stage 0 through Stage 2 with AI prompting guidance
+description: Block A vibe-coding workflow — Stage 1 through Stage 2 with AI prompting guidance
 ---
 
 ## Vibe Coding Workflow
 
-Block A is a vibe-coding exercise. The intentional gaps in the starter code (booking form, booking list, price estimation, validation) are the features you are expected to implement — using AI to do most of the writing.
-
-### Stage 0 — Specify (optional but recommended)
-
-For anything bigger than a single component, use the **@spec-interrogator** agent to produce a frozen spec before writing code. This prevents wasted effort when the AI builds the wrong thing.
-
-> Skip Stage 0 for small additions (a button, a label, a CSS tweak) and go straight to Stage 1.
+Block A is a vibe-coding exercise. The intentional gaps in the starter code (booking form, booking list, price estimation, validation) are the features you are expected to implement — using AI to do most of the writing. No spec required — describe what you want in natural language and let the AI generate the code.
 
 ### Stage 1 — Vibe code it
 
@@ -56,7 +50,7 @@ Disable the submit button while any validation error is active.
 
 ### Stage 2.5 — Self-review
 
-After implementing a feature, use the **/code-review** skill to check your implementation against the spec (or against your own acceptance criteria if you skipped Stage 0).
+After implementing a feature, use the **/code-review** skill to check your implementation against your own acceptance criteria.
 
 > Trigger prompt: *"Review my booking form implementation. Check that it handles empty inputs, invalid dates, and wires correctly to useBookings. List each criterion with ✅, ⚠️, or ❌."*
 
@@ -82,3 +76,4 @@ git commit -m "feat: <what you built>"
 - **Reference existing code.** Tell Copilot to "use the existing `useBookings` hook" or "follow the same pattern as `ZoneCard.tsx`". This keeps the output consistent.
 - **Reject and re-prompt freely.** If the output is wrong, don't try to manually fix it — re-describe more precisely and regenerate.
 - **Use @pair-programmer** when you're unsure about a design decision (e.g. "should this state live in the hook or the component?"). It will ask you the right questions without writing the code for you.
+- **Stuck on a larger feature?** If pure vibe coding keeps producing the wrong thing, the **@spec-interrogator** agent can lock down requirements before you code. But try vibe coding first — spec-driven development is Block C.
