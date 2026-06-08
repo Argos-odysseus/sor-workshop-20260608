@@ -1,5 +1,7 @@
 import request from 'supertest';
 import { app } from '../src/app';
+import { EnergyValidationError, energyService } from '../src/services/EnergyService';
+import { CreateReadingDto } from '../src/types/Energy';
 
 describe('GET /houses', () => {
   it('returns a list of houses', async () => {
@@ -170,6 +172,16 @@ describe('POST /houses/:id/readings', () => {
     expect(res.body.code).toBe('VALIDATION_ERROR');
   });
 
+  it('returns 400 when kwh is non-finite', async () => {
+    const res = await request(app)
+      .post('/houses/house-002/readings')
+      .set('Content-Type', 'application/json')
+      .send('{"timestamp":"2026-06-05T10:00:00.000Z","kwh":1e309}');
+
+    expect(res.status).toBe(400);
+    expect(res.body.code).toBe('VALIDATION_ERROR');
+  });
+
   it('returns 400 when timestamp is missing', async () => {
     const res = await request(app)
       .post('/houses/house-002/readings')
@@ -194,6 +206,60 @@ describe('POST /houses/:id/readings', () => {
 
     expect(res.status).toBe(400);
     expect(res.body.code).toBe('VALIDATION_ERROR');
+  });
+});
+
+describe('EnergyService validation', () => {
+  it('rejects direct writes with invalid timestamps or non-finite kwh without changing summaries', () => {
+    const before = energyService.getReadingSummaryForHouse('house-002');
+
+    expect(() =>
+      energyService.addReading({
+        houseId: 'house-002',
+        timestamp: 'not-a-date',
+        kwh: 1.5,
+      }),
+    ).toThrow(EnergyValidationError);
+
+    expect(() =>
+      energyService.addReading({
+        houseId: 'house-002',
+        timestamp: '2026-06-05T10:00:00.000Z',
+        kwh: Infinity,
+      }),
+    ).toThrow(EnergyValidationError);
+
+    expect(energyService.getReadingSummaryForHouse('house-002')).toEqual(before);
+  });
+
+  it('rejects direct range reads with invalid timestamps or inverted ranges', () => {
+    expect(() => energyService.getReadingsForHouseInRange('house-001', '2026-06-05')).toThrow(
+      EnergyValidationError,
+    );
+
+    expect(() =>
+      energyService.getReadingsForHouseInRange(
+        'house-001',
+        '2026-06-06T00:00:00.000Z',
+        '2026-06-05T00:00:00.000Z',
+      ),
+    ).toThrow(EnergyValidationError);
+  });
+
+  it('rejects direct writes when timestamp or kwh are missing at runtime', () => {
+    expect(() =>
+      energyService.addReading({
+        houseId: 'house-002',
+        kwh: 1.5,
+      } as CreateReadingDto),
+    ).toThrow(EnergyValidationError);
+
+    expect(() =>
+      energyService.addReading({
+        houseId: 'house-002',
+        timestamp: '2026-06-05T10:00:00.000Z',
+      } as CreateReadingDto),
+    ).toThrow(EnergyValidationError);
   });
 });
 

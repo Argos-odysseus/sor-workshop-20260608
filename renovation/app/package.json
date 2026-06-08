@@ -4,6 +4,7 @@
   "description": "Legacy gym membership system — intentionally messy for AI comprehension exercise",
   "main": "dist/index.js",
   "scripts": {
+    "prebuild": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
     "build": "tsc",
     "dev": "ts-node-dev --respawn src/index.ts",
     "start": "node dist/index.js",

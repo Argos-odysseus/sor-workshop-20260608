@@ -7,6 +7,15 @@ import {
   ReadingSummary,
 } from '../types/Energy';
 
+export class EnergyValidationError extends Error {
+  readonly code = 'VALIDATION_ERROR';
+
+  constructor(message: string) {
+    super(message);
+    this.name = 'EnergyValidationError';
+  }
+}
+
 const houses: Map<string, House> = new Map([
   [
     'house-001',
@@ -24,6 +33,50 @@ const houses: Map<string, House> = new Map([
 
 // Pre-seed ~24 hourly readings for house-001 covering the last 24 hours
 const readings: Map<string, EnergyReading> = new Map();
+
+function isValidIsoTimestamp(value: string): boolean {
+  const isoTimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
+  if (!isoTimestampPattern.test(value)) {
+    return false;
+  }
+
+  const normalizedValue = value.includes('.') ? value : value.replace('Z', '.000Z');
+  const parsed = new Date(value);
+
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString() === normalizedValue;
+}
+
+function validateTimestamp(value: unknown, fieldName: string): asserts value is string {
+  if (typeof value !== 'string') {
+    throw new EnergyValidationError(`${fieldName} must be a valid ISO timestamp`);
+  }
+
+  if (!isValidIsoTimestamp(value)) {
+    throw new EnergyValidationError(`${fieldName} must be a valid ISO timestamp`);
+  }
+}
+
+function validateReadingRange(from?: string, to?: string): void {
+  if (from !== undefined) {
+    validateTimestamp(from, 'from');
+  }
+
+  if (to !== undefined) {
+    validateTimestamp(to, 'to');
+  }
+
+  if (from !== undefined && to !== undefined && new Date(from).getTime() > new Date(to).getTime()) {
+    throw new EnergyValidationError('from must be before to');
+  }
+}
+
+function validateCreateReading(dto: CreateReadingDto): void {
+  validateTimestamp(dto.timestamp, 'timestamp');
+
+  if (typeof dto.kwh !== 'number' || !Number.isFinite(dto.kwh) || dto.kwh <= 0) {
+    throw new EnergyValidationError('kwh must be a positive finite number');
+  }
+}
 
 const seedKwh = [
   0.4, 0.3, 0.3, 0.4, 0.5, 0.7, 1.2, 1.8, 2.1, 1.9, 1.5, 1.4,
@@ -61,6 +114,8 @@ export const energyService = {
     from?: string,
     to?: string,
   ): EnergyReading[] {
+    validateReadingRange(from, to);
+
     const fromTime = from ? new Date(from).getTime() : undefined;
     const toTime = to ? new Date(to).getTime() : undefined;
 
@@ -110,6 +165,8 @@ export const energyService = {
   },
 
   addReading(dto: CreateReadingDto): EnergyReading {
+    validateCreateReading(dto);
+
     const reading: EnergyReading = {
       id: uuidv4(),
       houseId: dto.houseId,

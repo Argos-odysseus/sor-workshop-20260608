@@ -1,17 +1,10 @@
 import type { Booking, ParkingZone } from '../types/Booking';
+import { getBookingDayCount, getBookingPrice } from '../utils/bookingPricing';
 
 interface BookingListProps {
   bookings: Booking[];
   zones: ParkingZone[];
   onCancel: (id: string) => void;
-}
-
-function getDayCount(arrivalDate: string, departureDate: string): number {
-  const arrival = new Date(`${arrivalDate}T00:00:00Z`);
-  const departure = new Date(`${departureDate}T00:00:00Z`);
-  const diffMs = departure.getTime() - arrival.getTime();
-
-  return Math.max(1, Math.ceil(diffMs / 86_400_000));
 }
 
 function formatDate(date: string): string {
@@ -45,8 +38,12 @@ export function BookingList({ bookings, zones, onCancel }: BookingListProps) {
         <div className="grid gap-3">
           {bookings.map((booking) => {
             const zone = zoneById.get(booking.zoneId);
-            const days = getDayCount(booking.arrivalDate, booking.departureDate);
-            const price = zone ? days * zone.pricePerDay : 0;
+            const days = getBookingDayCount(booking.arrivalDate, booking.departureDate, {
+              minimumDays: 1,
+            });
+            const price = getBookingPrice(booking.arrivalDate, booking.departureDate, zone, {
+              minimumDays: 1,
+            });
 
             return (
               <article

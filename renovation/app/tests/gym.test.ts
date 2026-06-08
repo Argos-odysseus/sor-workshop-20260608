@@ -14,7 +14,14 @@ import {
   getProRatedFee,
   isOverdue,
 } from '../src/services/billingService';
-import { getPlans, resetMembers } from '../src/services/memberService';
+import {
+  addMember,
+  getAllMembers,
+  getMemberById,
+  getPlan,
+  getPlans,
+  resetMembers,
+} from '../src/services/memberService';
 
 beforeEach(() => {
   resetMembers();
@@ -143,6 +150,48 @@ describe('member routes', () => {
 
     expect(res.status).toBe(400);
     expect(res.body.code).toBe('VALIDATION_ERROR');
+  });
+});
+
+describe('member service boundaries', () => {
+  it('returns member list copies that cannot mutate stored members', () => {
+    const returnedMembers = getAllMembers();
+
+    returnedMembers.push({
+      id: 'external',
+      name: 'External',
+      email: 'external@example.com',
+      plan: 'basic',
+      joinDate: '2026-06-08',
+      active: true,
+    });
+    returnedMembers[0].name = 'Changed outside the service';
+
+    expect(getAllMembers()).toHaveLength(4);
+    expect(getMemberById('m1')).toMatchObject({ name: 'Alice' });
+  });
+
+  it('returns member and created member copies that cannot mutate stored members', () => {
+    const fetchedMember = getMemberById('m2');
+    const createdMember = addMember({ id: 'm99', name: 'Frida', email: 'frida@example.com' });
+
+    expect(fetchedMember).toBeDefined();
+    fetchedMember!.active = false;
+    createdMember.name = 'Changed after create';
+
+    expect(getMemberById('m2')).toMatchObject({ active: true });
+    expect(getMemberById('m99')).toMatchObject({ name: 'Frida' });
+  });
+
+  it('returns plan copies that cannot mutate stored plans', () => {
+    const basicPlan = getPlan('basic');
+    const plans = getPlans();
+
+    basicPlan.price = 1;
+    plans.premium.maxCheckins = 1;
+
+    expect(getPlan('basic').price).toBe(299);
+    expect(getPlans().premium.maxCheckins).toBe(999);
   });
 });
 

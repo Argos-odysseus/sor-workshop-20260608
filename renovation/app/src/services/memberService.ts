@@ -46,6 +46,21 @@ const plans: Record<PlanName, Plan> = {
 
 let members: Member[] = initialMembers.map((member) => ({ ...member }));
 
+function cloneMember(member: Member): Member {
+  return { ...member };
+}
+
+function clonePlan(plan: Plan): Plan {
+  return { ...plan };
+}
+
+function clonePlans(): Record<PlanName, Plan> {
+  return {
+    basic: clonePlan(plans.basic),
+    premium: clonePlan(plans.premium),
+  };
+}
+
 function isPlanName(value: unknown): value is PlanName {
   return value === 'basic' || value === 'premium';
 }
@@ -62,11 +77,12 @@ function validateDateOnly(value: string, fieldName: string): void {
 }
 
 export function getAllMembers(): Member[] {
-  return members;
+  return members.map(cloneMember);
 }
 
 export function getMemberById(id: string): Member | undefined {
-  return members.find((member) => member.id === id);
+  const member = members.find((candidate) => candidate.id === id);
+  return member ? cloneMember(member) : undefined;
 }
 
 export function requireMember(id: string): Member {
@@ -79,11 +95,11 @@ export function requireMember(id: string): Member {
 }
 
 export function getPlan(planName: PlanName): Plan {
-  return plans[planName];
+  return clonePlan(plans[planName]);
 }
 
 export function getPlans(): Record<PlanName, Plan> {
-  return plans;
+  return clonePlans();
 }
 
 export function addMember(input: CreateMemberInput): Member {
@@ -124,9 +140,9 @@ export function addMember(input: CreateMemberInput): Member {
   };
 
   members = [...members, member];
-  return member;
+  return cloneMember(member);
 }
 
 export function resetMembers(): void {
-  members = initialMembers.map((member) => ({ ...member }));
+  members = initialMembers.map(cloneMember);
 }

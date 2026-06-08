@@ -1,5 +1,6 @@
 import { FormEvent, useMemo, useState } from 'react';
 import type { BookingDraft, ParkingZone, ZoneId } from '../types/Booking';
+import { getBookingDayCount, getBookingPrice } from '../utils/bookingPricing';
 
 interface BookingFormProps {
   zones: ParkingZone[];
@@ -21,18 +22,6 @@ function toDateOnly(value: Date): string {
   return value.toISOString().slice(0, 10);
 }
 
-function getDayCount(arrivalDate: string, departureDate: string): number {
-  if (!arrivalDate || !departureDate) {
-    return 0;
-  }
-
-  const arrival = new Date(`${arrivalDate}T00:00:00Z`);
-  const departure = new Date(`${departureDate}T00:00:00Z`);
-  const diffMs = departure.getTime() - arrival.getTime();
-
-  return Math.max(0, Math.ceil(diffMs / 86_400_000));
-}
-
 export function BookingForm({
   zones,
   selectedZoneId,
@@ -46,8 +35,8 @@ export function BookingForm({
   const [errors, setErrors] = useState<FormErrors>({});
 
   const selectedZone = zones.find((zone) => zone.id === selectedZoneId) ?? zones[0];
-  const dayCount = getDayCount(arrivalDate, departureDate);
-  const estimate = selectedZone ? dayCount * selectedZone.pricePerDay : 0;
+  const dayCount = getBookingDayCount(arrivalDate, departureDate);
+  const estimate = getBookingPrice(arrivalDate, departureDate, selectedZone);
 
   const sortedZones = useMemo(
     () => [...zones].sort((left, right) => left.pricePerDay - right.pricePerDay),

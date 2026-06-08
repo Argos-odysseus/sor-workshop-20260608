@@ -1,23 +1,15 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { energyService } from '../services/EnergyService';
+import { EnergyValidationError, energyService } from '../services/EnergyService';
 import { CreateReadingDto } from '../types/Energy';
 
 export const energyRouter = Router();
 
-function isValidIsoTimestamp(value: string): boolean {
-  const isoTimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
-  if (!isoTimestampPattern.test(value)) {
-    return false;
-  }
-
-  const normalizedValue = value.includes('.') ? value : value.replace('Z', '.000Z');
-  const parsed = new Date(value);
-
-  return !Number.isNaN(parsed.getTime()) && parsed.toISOString() === normalizedValue;
-}
-
 function getStringQueryParam(value: unknown): string | undefined {
   return typeof value === 'string' ? value : undefined;
+}
+
+function sendValidationError(res: Response, err: EnergyValidationError): void {
+  res.status(400).json({ error: err.message, code: err.code });
 }
 
 // GET /houses
@@ -46,7 +38,7 @@ energyRouter.get('/houses/:id/readings/summary', (req: Request, res: Response) =
 });
 
 // GET /houses/:id/readings
-energyRouter.get('/houses/:id/readings', (req: Request, res: Response) => {
+energyRouter.get('/houses/:id/readings', (req: Request, res: Response, next: NextFunction) => {
   const house = energyService.getHouseById(req.params.id);
   if (!house) {
     res.status(404).json({ error: 'House not found', code: 'HOUSE_NOT_FOUND' });
@@ -56,19 +48,16 @@ energyRouter.get('/houses/:id/readings', (req: Request, res: Response) => {
   const from = getStringQueryParam(req.query.from);
   const to = getStringQueryParam(req.query.to);
 
-  if ((from && !isValidIsoTimestamp(from)) || (to && !isValidIsoTimestamp(to))) {
-    res
-      .status(400)
-      .json({ error: 'from and to must be valid ISO timestamps', code: 'VALIDATION_ERROR' });
-    return;
-  }
+  try {
+    res.json(energyService.getReadingsForHouseInRange(req.params.id, from, to));
+  } catch (err) {
+    if (err instanceof EnergyValidationError) {
+      sendValidationError(res, err);
+      return;
+    }
 
-  if (from && to && new Date(from).getTime() > new Date(to).getTime()) {
-    res.status(400).json({ error: 'from must be before to', code: 'VALIDATION_ERROR' });
-    return;
+    next(err);
   }
-
-  res.json(energyService.getReadingsForHouseInRange(req.params.id, from, to));
 });
 
 // POST /houses/:id/readings
@@ -84,35 +73,19 @@ energyRouter.post(
 
       const { timestamp, kwh } = req.body as Partial<CreateReadingDto>;
 
-      if (typeof kwh !== 'number' || kwh <= 0) {
-        res
-          .status(400)
-          .json({ error: 'kwh must be a positive number', code: 'VALIDATION_ERROR' });
-        return;
-      }
-
-      if (!timestamp || typeof timestamp !== 'string') {
-        res
-          .status(400)
-          .json({ error: 'timestamp is required', code: 'VALIDATION_ERROR' });
-        return;
-      }
-
-      if (!isValidIsoTimestamp(timestamp)) {
-        res
-          .status(400)
-          .json({ error: 'timestamp must be a valid ISO timestamp', code: 'VALIDATION_ERROR' });
-        return;
-      }
-
       const reading = energyService.addReading({
         houseId: req.params.id,
         timestamp,
         kwh,
-      });
+      } as CreateReadingDto);
 
       res.status(201).json(reading);
     } catch (err) {
+      if (err instanceof EnergyValidationError) {
+        sendValidationError(res, err);
+        return;
+      }
+
       next(err);
     }
   },

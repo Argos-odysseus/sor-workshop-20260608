@@ -86,16 +86,18 @@ cd renovation/app
 npm run dev
 ```
 
+The demo server binds to `127.0.0.1:4000` and is intended for local workshop use only. It exposes seeded in-memory data and unauthenticated mutations for the exercise; do not run it as a network-facing service.
+
 Show before-after contrast from `README.md`: legacy JS had no tests, weak validation, inconsistent errors, and hardcoded billing. The renovated app has strict TypeScript, service modules, deterministic tests, and consistent errors.
 
 Example requests:
 
 ```bash
-curl http://localhost:4000/members/m1/billing
-curl -X POST http://localhost:4000/members/m2/checkin \
+curl http://127.0.0.1:4000/members/m1/billing
+curl -X POST http://127.0.0.1:4000/members/m2/checkin \
   -H 'Content-Type: application/json' \
   -d '{"date":"2026-06-08T09:00:00.000Z"}'
-curl -X POST http://localhost:4000/members/missing/checkin \
+curl -X POST http://127.0.0.1:4000/members/missing/checkin \
   -H 'Content-Type: application/json' \
   -d '{"date":"2026-06-08T09:00:00.000Z"}'
 ```
