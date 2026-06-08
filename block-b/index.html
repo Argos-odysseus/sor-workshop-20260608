@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Block B - Gym Membership API</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <main class="shell detail">
+      <a class="back" href="../">Back to demos</a>
+      <p class="eyebrow">Block B</p>
+      <h1>Gym Membership API</h1>
+      <p class="lede">
+        Backend solution for the code renovation exercise. This page is static because GitHub Pages cannot run the
+        Express server; use the commands below to run it locally.
+      </p>
+
+      <section class="panel">
+        <h2>Run locally</h2>
+        <pre><code>git checkout argos/workshop-block-b-renovation
+cd renovation/app
+npm install
+npm test
+npm run dev</code></pre>
+      </section>
+
+      <section class="panel">
+        <h2>Endpoints</h2>
+        <ul class="endpoint-list">
+          <li><code>GET /members</code><span>List all members.</span></li>
+          <li><code>GET /members/:id</code><span>Get one member with consistent not-found handling.</span></li>
+          <li><code>POST /members</code><span>Create a member with input validation.</span></li>
+          <li><code>POST /members/:id/checkin</code><span>Check in with plan limit enforcement.</span></li>
+          <li><code>GET /members/:id/checkins</code><span>Read check-in history.</span></li>
+          <li><code>GET /members/:id/billing</code><span>Read billing summary from service logic.</span></li>
+        </ul>
+      </section>
+
+      <section class="links">
+        <a href="https://github.com/Argos-odysseus/sor-workshop-20260608/tree/argos/workshop-block-b-renovation/renovation">Source branch</a>
+        <a href="https://github.com/Knowit-Objectnet/sor-workshop-20260608/pull/3">Upstream PR #3</a>
+      </section>
+    </main>
+  </body>
+</html>

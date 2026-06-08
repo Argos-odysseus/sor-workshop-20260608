@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Block C - Energy API</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <main class="shell detail">
+      <a class="back" href="../">Back to demos</a>
+      <p class="eyebrow">Block C</p>
+      <h1>Energy API</h1>
+      <p class="lede">
+        Backend solution for the agent build exercise. The GitHub Pages version documents the API and branch;
+        the Express service should be run locally for live requests.
+      </p>
+
+      <section class="panel">
+        <h2>Run locally</h2>
+        <pre><code>git checkout argos/workshop-block-c-energy-api
+cd agent/app
+npm install
+npm test
+npm run dev</code></pre>
+      </section>
+
+      <section class="panel">
+        <h2>Endpoints</h2>
+        <ul class="endpoint-list">
+          <li><code>GET /houses</code><span>List seeded houses.</span></li>
+          <li><code>GET /houses/:id</code><span>Get one house.</span></li>
+          <li><code>GET /houses/:id/readings</code><span>List readings, with optional <code>from</code> and <code>to</code> ISO filters.</span></li>
+          <li><code>GET /houses/:id/readings/summary</code><span>Return total, average, count, and daily averages.</span></li>
+          <li><code>POST /houses/:id/readings</code><span>Add a reading with timestamp and kWh validation.</span></li>
+          <li><code>DELETE /readings/:id</code><span>Delete a reading.</span></li>
+        </ul>
+      </section>
+
+      <section class="links">
+        <a href="https://github.com/Argos-odysseus/sor-workshop-20260608/tree/argos/workshop-block-c-energy-api/agent">Source branch</a>
+        <a href="https://github.com/Knowit-Objectnet/sor-workshop-20260608/pull/4">Upstream PR #4</a>
+      </section>
+    </main>
+  </body>
+</html>
