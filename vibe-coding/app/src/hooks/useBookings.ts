@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Booking, ParkingZone, ZoneId } from '../types/Booking';
+import type { Booking, BookingDraft, ParkingZone } from '../types/Booking';
 
 const INITIAL_ZONES: ParkingZone[] = [
   {
@@ -52,21 +52,24 @@ const INITIAL_BOOKINGS: Booking[] = [
 ];
 
 export function useBookings() {
-  const [zones] = useState<ParkingZone[]>(INITIAL_ZONES);
+  const [baseZones] = useState<ParkingZone[]>(INITIAL_ZONES);
   const [bookings, setBookings] = useState<Booking[]>(INITIAL_BOOKINGS);
 
-  function addBooking(
-    zoneId: ZoneId,
-    licensePlate: string,
-    arrivalDate: string,
-    departureDate: string
-  ): void {
+  const zones = baseZones.map((zone) => ({
+    ...zone,
+    availableSpots: Math.max(
+      0,
+      zone.availableSpots - bookings.filter((booking) => booking.zoneId === zone.id).length,
+    ),
+  }));
+
+  function addBooking(draft: BookingDraft): void {
     const newBooking: Booking = {
       id: 'bk-' + Date.now(),
-      zoneId,
-      licensePlate: licensePlate.toUpperCase(),
-      arrivalDate,
-      departureDate,
+      zoneId: draft.zoneId,
+      licensePlate: draft.licensePlate.toUpperCase(),
+      arrivalDate: draft.arrivalDate,
+      departureDate: draft.departureDate,
       createdAt: new Date().toISOString(),
     };
     setBookings((prev) => [newBooking, ...prev]);
