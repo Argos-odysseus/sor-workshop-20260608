@@ -82,7 +82,7 @@ A parking booking site with pre-seeded zones (P1/P2/P3/EXPRESS) and bookings. Us
 ```bash
 cd vibe-coding/app
 npm run dev
-# App available at http://localhost:5173
+# App available at http://localhost:3000
 ```
 
 ### Block B — Gym Membership API (Renovation)
