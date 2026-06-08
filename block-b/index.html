@@ -3,38 +3,135 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Block B - Gym Membership API</title>
+    <title>Block B - Membership Demo</title>
     <link rel="stylesheet" href="../styles.css" />
   </head>
   <body>
     <main class="shell detail">
       <a class="back" href="../">Back to demos</a>
-      <p class="eyebrow">Block B</p>
-      <h1>Gym Membership API</h1>
-      <p class="lede">
-        Backend solution for the code renovation exercise. This page is static because GitHub Pages cannot run the
-        Express server; use the commands below to run it locally.
-      </p>
-
-      <section class="panel">
-        <h2>Run locally</h2>
-        <pre><code>git checkout argos/workshop-block-b-renovation
-cd renovation/app
-npm install
-npm test
-npm run dev</code></pre>
+      <section class="hero">
+        <p class="eyebrow">Block B</p>
+        <h1>Gym membership operations demo</h1>
+        <p class="lede">
+          Static browser front end that mirrors the finished renovation API behavior: member creation, consistent
+          validation errors, billing summaries, weekly check-in limits, and service-style responses.
+        </p>
+        <div class="top-note">
+          <span><strong>Static demo.</strong> All state lives in this page to model the Express solution without publishing a live API.</span>
+          <span class="inline-code">branch argos/workshop-block-b-renovation @ 3a6e450</span>
+        </div>
       </section>
 
-      <section class="panel">
-        <h2>Endpoints</h2>
-        <ul class="endpoint-list">
-          <li><code>GET /members</code><span>List all members.</span></li>
-          <li><code>GET /members/:id</code><span>Get one member with consistent not-found handling.</span></li>
-          <li><code>POST /members</code><span>Create a member with input validation.</span></li>
-          <li><code>POST /members/:id/checkin</code><span>Check in with plan limit enforcement.</span></li>
-          <li><code>GET /members/:id/checkins</code><span>Read check-in history.</span></li>
-          <li><code>GET /members/:id/billing</code><span>Read billing summary from service logic.</span></li>
-        </ul>
+      <section class="stats-grid" id="overview-stats"></section>
+
+      <section class="workspace">
+        <div class="stack">
+          <section class="panel">
+            <div class="section-header">
+              <div>
+                <h2>Member roster</h2>
+                <p>Select a member to inspect plan data, billing, and check-in history.</p>
+              </div>
+              <div class="chip-row" id="plan-chips"></div>
+            </div>
+            <div class="member-grid" id="member-grid"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-header">
+              <div>
+                <h2>Plan catalog</h2>
+                <p>The demo uses the same Basic and Premium pricing and check-in limits as the refactored services.</p>
+              </div>
+            </div>
+            <div class="plan-grid" id="plan-grid"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-header">
+              <div>
+                <h2>Live service responses</h2>
+                <p>Every interaction updates a mock HTTP status plus the JSON body shape used by the API.</p>
+              </div>
+            </div>
+            <div class="two-column">
+              <div class="response-box"><pre id="response-json"></pre></div>
+              <div class="log-box"><pre id="event-log"></pre></div>
+            </div>
+          </section>
+        </div>
+
+        <div class="stack">
+          <section class="panel">
+            <div class="section-header">
+              <div>
+                <h2>Selected member</h2>
+                <p id="selected-member-copy">Choose a card to load billing and check-in data.</p>
+              </div>
+            </div>
+            <div id="selected-member-panel"></div>
+          </section>
+
+          <section class="panel">
+            <h2>Add member</h2>
+            <p class="muted">Replicates the route validation for name, email, plan, join date, and duplicate ids.</p>
+            <form id="member-form">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="member-id">Member id</label>
+                  <input id="member-id" name="id" placeholder="Leave blank for auto id" />
+                </div>
+                <div class="field">
+                  <label for="member-name">Name</label>
+                  <input id="member-name" name="name" placeholder="Ada Lovelace" required />
+                </div>
+                <div class="field">
+                  <label for="member-email">Email</label>
+                  <input id="member-email" name="email" type="email" placeholder="ada@example.com" required />
+                </div>
+                <div class="field">
+                  <label for="member-plan">Plan</label>
+                  <select id="member-plan" name="plan">
+                    <option value="">Default basic</option>
+                    <option value="basic">basic</option>
+                    <option value="premium">premium</option>
+                  </select>
+                </div>
+                <div class="field full">
+                  <label for="member-join-date">Join date</label>
+                  <input id="member-join-date" name="joinDate" type="date" />
+                  <small>Validation matches <code>YYYY-MM-DD</code> parsing in the service layer.</small>
+                </div>
+              </div>
+              <div class="actions">
+                <button type="submit">Create member</button>
+                <button class="ghost" type="button" id="invalid-member-test">Trigger invalid email</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="panel">
+            <h2>Check-in simulator</h2>
+            <p class="muted">Uses Monday-based week buckets and plan limit enforcement from the finished service.</p>
+            <form id="checkin-form">
+              <div class="form-grid">
+                <div class="field full">
+                  <label for="checkin-member">Member</label>
+                  <select id="checkin-member" name="memberId"></select>
+                </div>
+                <div class="field full">
+                  <label for="checkin-date">Check-in timestamp</label>
+                  <input id="checkin-date" name="date" type="datetime-local" step="1" />
+                  <small>Leave blank to use the current timestamp, just like the API route.</small>
+                </div>
+              </div>
+              <div class="actions">
+                <button type="submit">Submit check-in</button>
+                <button class="ghost" type="button" id="limit-checkin-test">Hit weekly limit</button>
+              </div>
+            </form>
+          </section>
+        </div>
       </section>
 
       <section class="links">
@@ -42,5 +139,395 @@ npm run dev</code></pre>
         <a href="https://github.com/Knowit-Objectnet/sor-workshop-20260608/pull/3">Upstream PR #3</a>
       </section>
     </main>
+
+    <script>
+      const plans = {
+        basic: { price: 299, maxCheckins: 4, name: "Basic" },
+        premium: { price: 499, maxCheckins: 999, name: "Premium" },
+      };
+
+      const initialMembers = [
+        { id: "m1", name: "Alice", email: "alice@example.com", plan: "premium", joinDate: "2025-01-15", active: true },
+        { id: "m2", name: "Bob", email: "bob@example.com", plan: "basic", joinDate: "2025-03-10", active: true },
+        { id: "m3", name: "Charlie", email: "charlie@example.com", plan: "premium", joinDate: "2024-11-01", active: false },
+        { id: "m4", name: "Diana", email: "diana@example.com", plan: "basic", joinDate: "2025-06-01", active: true },
+      ];
+
+      const initialCheckins = new Map([
+        ["m1", ["2026-06-02T08:00:00.000Z", "2026-06-04T08:15:00.000Z", "2026-06-06T18:30:00.000Z"]],
+        ["m2", ["2026-06-02T09:00:00.000Z", "2026-06-03T09:10:00.000Z", "2026-06-05T07:40:00.000Z", "2026-06-07T10:00:00.000Z"]],
+        ["m4", ["2026-06-08T06:45:00.000Z"]],
+      ]);
+
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const dateOnlyPattern = /^\d{4}-\d{2}-\d{2}$/;
+      const BILLING_CYCLE_DAYS = 30;
+      const MONTHS_PER_YEAR = 12;
+      const MS_PER_DAY = 86400000;
+
+      const state = {
+        members: initialMembers.map((member) => ({ ...member })),
+        checkins: new Map(Array.from(initialCheckins.entries()).map(([id, entries]) => [id, [...entries]])),
+        selectedMemberId: "m1",
+        response: {
+          method: "GET",
+          path: "/members/m1/billing",
+          status: 200,
+          body: {},
+        },
+        log: ["Loaded in-browser service state from the finished Block B solution."],
+      };
+
+      function clonePlan(plan) {
+        return { ...plan };
+      }
+
+      function cloneMember(member) {
+        return { ...member };
+      }
+
+      function createApiError(message, status, code) {
+        const error = new Error(message);
+        error.status = status;
+        error.code = code;
+        return error;
+      }
+
+      function validateDateOnly(value, fieldName) {
+        const parsed = new Date(value + "T00:00:00Z");
+        if (!dateOnlyPattern.test(value) || Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== value) {
+          throw createApiError(fieldName + " must be a valid YYYY-MM-DD date", 400, "VALIDATION_ERROR");
+        }
+      }
+
+      function requireMember(id) {
+        const member = state.members.find((candidate) => candidate.id === id);
+        if (!member) {
+          throw createApiError("Member not found", 404, "MEMBER_NOT_FOUND");
+        }
+        return cloneMember(member);
+      }
+
+      function getWeekKey(date) {
+        const parsed = new Date(date);
+        if (Number.isNaN(parsed.getTime())) {
+          throw createApiError("date must be a valid date string", 400, "VALIDATION_ERROR");
+        }
+
+        const utcDate = new Date(Date.UTC(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate()));
+        const day = utcDate.getUTCDay();
+        const daysSinceMonday = day === 0 ? 6 : day - 1;
+        utcDate.setUTCDate(utcDate.getUTCDate() - daysSinceMonday);
+        return utcDate.toISOString().slice(0, 10);
+      }
+
+      function countForWeek(memberId, date) {
+        const week = getWeekKey(date);
+        return (state.checkins.get(memberId) || []).filter((entry) => getWeekKey(entry) === week).length;
+      }
+
+      function parseCheckinDate(value) {
+        if (!value) {
+          return new Date().toISOString();
+        }
+        const parsed = new Date(value);
+        if (Number.isNaN(parsed.getTime())) {
+          throw createApiError("date must be a valid date string", 400, "VALIDATION_ERROR");
+        }
+        return parsed.toISOString();
+      }
+
+      function getMonthlyFee(planName) {
+        return plans[planName].price;
+      }
+
+      function getAnnualCost(planName) {
+        return getMonthlyFee(planName) * MONTHS_PER_YEAR;
+      }
+
+      function getProRatedFee(planName, joinDate) {
+        const joined = new Date(joinDate + "T00:00:00Z");
+        const dayOfMonth = joined.getUTCDate();
+        const remainingDays = Math.max(0, BILLING_CYCLE_DAYS - dayOfMonth);
+        return Math.round((plans[planName].price / BILLING_CYCLE_DAYS) * remainingDays);
+      }
+
+      function getBillingSummary(memberId) {
+        const member = requireMember(memberId);
+        const plan = clonePlan(plans[member.plan]);
+        return {
+          member: member.name,
+          plan: plan.name,
+          monthlyFee: getMonthlyFee(member.plan),
+          annualCost: getAnnualCost(member.plan),
+          proRatedFirstMonth: getProRatedFee(member.plan, member.joinDate),
+          active: member.active,
+        };
+      }
+
+      function addMember(input) {
+        const name = typeof input.name === "string" ? input.name.trim() : "";
+        const email = typeof input.email === "string" ? input.email.trim().toLowerCase() : "";
+        const id = typeof input.id === "string" && input.id.trim() ? input.id.trim() : "m" + (state.members.length + 1);
+        const plan = input.plan === undefined || input.plan === "" ? "basic" : input.plan;
+        const joinDate = typeof input.joinDate === "string" && input.joinDate.trim() ? input.joinDate.trim() : new Date().toISOString().slice(0, 10);
+
+        if (!name) {
+          throw createApiError("name is required", 400, "VALIDATION_ERROR");
+        }
+        if (!emailPattern.test(email)) {
+          throw createApiError("email must be valid", 400, "VALIDATION_ERROR");
+        }
+        if (plan !== "basic" && plan !== "premium") {
+          throw createApiError("plan must be basic or premium", 400, "VALIDATION_ERROR");
+        }
+        validateDateOnly(joinDate, "joinDate");
+        if (state.members.some((member) => member.id === id)) {
+          throw createApiError("member id already exists", 400, "VALIDATION_ERROR");
+        }
+
+        const member = { id, name, email, plan, joinDate, active: true };
+        state.members.push(member);
+        return cloneMember(member);
+      }
+
+      function checkIn(memberId, rawDate) {
+        const member = requireMember(memberId);
+        if (!member.active) {
+          throw createApiError("Member is inactive", 400, "MEMBER_INACTIVE");
+        }
+        const date = parseCheckinDate(rawDate);
+        const currentCount = countForWeek(memberId, date);
+        const plan = plans[member.plan];
+        if (currentCount >= plan.maxCheckins) {
+          throw createApiError("Plan check-in limit exceeded", 400, "PLAN_LIMIT_EXCEEDED");
+        }
+
+        const history = state.checkins.get(memberId) || [];
+        history.push(date);
+        state.checkins.set(memberId, history);
+        return { memberId, week: getWeekKey(date), count: currentCount + 1 };
+      }
+
+      function getHistory(memberId) {
+        requireMember(memberId);
+        return [...(state.checkins.get(memberId) || [])];
+      }
+
+      function setResponse(method, path, status, body) {
+        state.response = { method, path, status, body };
+      }
+
+      function addLog(line) {
+        state.log.unshift(new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) + "  " + line);
+        state.log = state.log.slice(0, 10);
+      }
+
+      function safeRun(request, action) {
+        try {
+          const body = action();
+          setResponse(request.method, request.path, request.status, body);
+          addLog(request.method + " " + request.path + " -> " + request.status);
+        } catch (error) {
+          setResponse(request.method, request.path, error.status || 500, { error: error.message, code: error.code || "INTERNAL_ERROR" });
+          addLog(request.method + " " + request.path + " -> " + (error.status || 500) + " " + error.message);
+        }
+        render();
+      }
+
+      function currency(value) {
+        return new Intl.NumberFormat("en-NO", { style: "currency", currency: "NOK", maximumFractionDigits: 0 }).format(value);
+      }
+
+      function renderOverview() {
+        const activeCount = state.members.filter((member) => member.active).length;
+        const basicCount = state.members.filter((member) => member.plan === "basic").length;
+        const premiumCount = state.members.filter((member) => member.plan === "premium").length;
+        const totalCheckins = Array.from(state.checkins.values()).reduce((sum, entries) => sum + entries.length, 0);
+
+        document.getElementById("overview-stats").innerHTML = [
+          { label: "Members", value: state.members.length },
+          { label: "Active members", value: activeCount },
+          { label: "Basic / Premium", value: basicCount + " / " + premiumCount },
+          { label: "Tracked check-ins", value: totalCheckins },
+        ].map((item) => '<article class="metric"><span>' + item.label + '</span><strong>' + item.value + "</strong></article>").join("");
+
+        document.getElementById("plan-chips").innerHTML =
+          '<span class="chip">Basic: ' + currency(plans.basic.price) + " / " + plans.basic.maxCheckins + ' per week</span>' +
+          '<span class="chip">Premium: ' + currency(plans.premium.price) + " / practically unlimited</span>";
+      }
+
+      function renderMembers() {
+        const selectedId = state.selectedMemberId;
+        document.getElementById("member-grid").innerHTML = state.members.map((member) => {
+          const checkinCount = (state.checkins.get(member.id) || []).length;
+          const weeklyCount = checkinCount ? countForWeek(member.id, (state.checkins.get(member.id) || [])[checkinCount - 1]) : 0;
+          return `
+            <article class="member-card ${member.id === selectedId ? "selected" : ""}">
+              <header>
+                <div>
+                  <h3>${member.name}</h3>
+                  <p>${member.email}</p>
+                </div>
+                <span class="tag ${member.active ? "ok" : "danger"}">${member.active ? "active" : "inactive"}</span>
+              </header>
+              <div class="tag-row">
+                <span class="chip">${plans[member.plan].name}</span>
+                <span class="chip">${currency(plans[member.plan].price)} / month</span>
+                <span class="chip">${weeklyCount} this week</span>
+              </div>
+              <footer>
+                <span>Joined ${member.joinDate}</span>
+                <button class="tiny" data-member-select="${member.id}">Inspect</button>
+              </footer>
+            </article>
+          `;
+        }).join("");
+      }
+
+      function renderPlans() {
+        document.getElementById("plan-grid").innerHTML = Object.entries(plans).map(([key, plan]) => `
+          <article class="plan-card">
+            <h3>${plan.name}</h3>
+            <p>${key} plan</p>
+            <div class="plan-price">${currency(plan.price)}</div>
+            <div class="tag-row">
+              <span class="chip">${plan.maxCheckins === 999 ? "Unlimited demo cap" : plan.maxCheckins + " weekly check-ins"}</span>
+              <span class="chip">${key === "basic" ? "Strict limit demo" : "High-usage tier"}</span>
+            </div>
+          </article>
+        `).join("");
+      }
+
+      function renderSelectedMember() {
+        const panel = document.getElementById("selected-member-panel");
+        const member = state.members.find((entry) => entry.id === state.selectedMemberId);
+        if (!member) {
+          panel.innerHTML = '<div class="empty">Select a member to load billing and history.</div>';
+          return;
+        }
+
+        const billing = getBillingSummary(member.id);
+        const history = getHistory(member.id).sort((left, right) => right.localeCompare(left));
+        const latestForWeek = history[0] || new Date().toISOString();
+        const weekCount = countForWeek(member.id, latestForWeek);
+        document.getElementById("selected-member-copy").textContent = member.name + " is on the " + plans[member.plan].name + " plan.";
+
+        panel.innerHTML = `
+          <div class="info-grid">
+            <article class="info-box"><span>Monthly fee</span><strong>${currency(billing.monthlyFee)}</strong></article>
+            <article class="info-box"><span>Annual cost</span><strong>${currency(billing.annualCost)}</strong></article>
+            <article class="info-box"><span>Pro-rated first month</span><strong>${currency(billing.proRatedFirstMonth)}</strong></article>
+            <article class="info-box"><span>This week</span><strong>${weekCount} / ${plans[member.plan].maxCheckins === 999 ? "999" : plans[member.plan].maxCheckins}</strong></article>
+          </div>
+          <div class="actions">
+            <button class="ghost tiny" data-load-response="member">Mock GET /members/${member.id}</button>
+            <button class="ghost tiny" data-load-response="billing">Mock GET /members/${member.id}/billing</button>
+            <button class="ghost tiny" data-load-response="history">Mock GET /members/${member.id}/checkins</button>
+          </div>
+          <div class="table-wrap" style="margin-top: 14px;">
+            <table>
+              <thead>
+                <tr><th>Timestamp</th><th>Week bucket</th><th>Plan limit note</th></tr>
+              </thead>
+              <tbody>
+                ${history.length ? history.map((entry) => `
+                  <tr>
+                    <td>${entry}</td>
+                    <td>${getWeekKey(entry)}</td>
+                    <td>${plans[member.plan].maxCheckins === 999 ? "Premium stays below demo cap." : "Basic capped at four per ISO week."}</td>
+                  </tr>
+                `).join("") : '<tr><td colspan="3">No check-ins recorded.</td></tr>'}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function renderResponse() {
+        document.getElementById("response-json").textContent = JSON.stringify(state.response, null, 2);
+        document.getElementById("event-log").textContent = state.log.join("\n");
+      }
+
+      function renderCheckinMembers() {
+        document.getElementById("checkin-member").innerHTML = state.members.map((member) => `
+          <option value="${member.id}" ${member.id === state.selectedMemberId ? "selected" : ""}>${member.name} (${member.id})</option>
+        `).join("");
+      }
+
+      function render() {
+        renderOverview();
+        renderMembers();
+        renderPlans();
+        renderSelectedMember();
+        renderResponse();
+        renderCheckinMembers();
+      }
+
+      document.getElementById("member-grid").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-member-select]");
+        if (!button) {
+          return;
+        }
+        state.selectedMemberId = button.getAttribute("data-member-select");
+        safeRun({ method: "GET", path: "/members/" + state.selectedMemberId, status: 200 }, () => requireMember(state.selectedMemberId));
+      });
+
+      document.getElementById("selected-member-panel").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-load-response]");
+        if (!button) {
+          return;
+        }
+        const memberId = state.selectedMemberId;
+        const mode = button.getAttribute("data-load-response");
+        if (mode === "member") {
+          safeRun({ method: "GET", path: "/members/" + memberId, status: 200 }, () => requireMember(memberId));
+        }
+        if (mode === "billing") {
+          safeRun({ method: "GET", path: "/members/" + memberId + "/billing", status: 200 }, () => getBillingSummary(memberId));
+        }
+        if (mode === "history") {
+          safeRun({ method: "GET", path: "/members/" + memberId + "/checkins", status: 200 }, () => getHistory(memberId));
+        }
+      });
+
+      document.getElementById("member-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        safeRun({ method: "POST", path: "/members", status: 201 }, () => {
+          const member = addMember({
+            id: formData.get("id"),
+            name: formData.get("name"),
+            email: formData.get("email"),
+            plan: formData.get("plan"),
+            joinDate: formData.get("joinDate"),
+          });
+          state.selectedMemberId = member.id;
+          event.currentTarget.reset();
+          return member;
+        });
+      });
+
+      document.getElementById("checkin-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const memberId = String(formData.get("memberId") || state.selectedMemberId);
+        const date = String(formData.get("date") || "");
+        state.selectedMemberId = memberId;
+        safeRun({ method: "POST", path: "/members/" + memberId + "/checkin", status: 200 }, () => checkIn(memberId, date));
+      });
+
+      document.getElementById("invalid-member-test").addEventListener("click", () => {
+        safeRun({ method: "POST", path: "/members", status: 201 }, () => addMember({ name: "Broken Input", email: "not-an-email", plan: "basic", joinDate: "2026-06-08" }));
+      });
+
+      document.getElementById("limit-checkin-test").addEventListener("click", () => {
+        const memberId = "m2";
+        state.selectedMemberId = memberId;
+        safeRun({ method: "POST", path: "/members/" + memberId + "/checkin", status: 200 }, () => checkIn(memberId, "2026-06-06T12:00:00Z"));
+      });
+
+      safeRun({ method: "GET", path: "/members/m1/billing", status: 200 }, () => getBillingSummary("m1"));
+    </script>
   </body>
 </html>

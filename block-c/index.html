@@ -3,38 +3,139 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Block C - Energy API</title>
+    <title>Block C - Energy Demo</title>
     <link rel="stylesheet" href="../styles.css" />
   </head>
   <body>
     <main class="shell detail">
       <a class="back" href="../">Back to demos</a>
-      <p class="eyebrow">Block C</p>
-      <h1>Energy API</h1>
-      <p class="lede">
-        Backend solution for the agent build exercise. The GitHub Pages version documents the API and branch;
-        the Express service should be run locally for live requests.
-      </p>
-
-      <section class="panel">
-        <h2>Run locally</h2>
-        <pre><code>git checkout argos/workshop-block-c-energy-api
-cd agent/app
-npm install
-npm test
-npm run dev</code></pre>
+      <section class="hero">
+        <p class="eyebrow">Block C</p>
+        <h1>Household energy analytics demo</h1>
+        <p class="lede">
+          Static browser console that reproduces the finished API behavior: seeded houses, hourly readings, range
+          filtering, aggregate summaries, daily averages, strict ISO timestamp validation, and delete flows.
+        </p>
+        <div class="top-note">
+          <span><strong>Static demo.</strong> The UI runs entirely in-browser while keeping the same response and validation rules as the Express service.</span>
+          <span class="inline-code">branch argos/workshop-block-c-energy-api @ ddfd09b</span>
+        </div>
       </section>
 
-      <section class="panel">
-        <h2>Endpoints</h2>
-        <ul class="endpoint-list">
-          <li><code>GET /houses</code><span>List seeded houses.</span></li>
-          <li><code>GET /houses/:id</code><span>Get one house.</span></li>
-          <li><code>GET /houses/:id/readings</code><span>List readings, with optional <code>from</code> and <code>to</code> ISO filters.</span></li>
-          <li><code>GET /houses/:id/readings/summary</code><span>Return total, average, count, and daily averages.</span></li>
-          <li><code>POST /houses/:id/readings</code><span>Add a reading with timestamp and kWh validation.</span></li>
-          <li><code>DELETE /readings/:id</code><span>Delete a reading.</span></li>
-        </ul>
+      <section class="stats-grid" id="energy-stats"></section>
+
+      <section class="workspace">
+        <div class="stack">
+          <section class="panel">
+            <div class="section-header">
+              <div>
+                <h2>Houses</h2>
+                <p>Choose a property to inspect readings, filter ranges, and work with the same summary model as the API.</p>
+              </div>
+            </div>
+            <div class="house-grid" id="house-grid"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-header">
+              <div>
+                <h2>Filtered readings</h2>
+                <p id="range-copy">The table and summary update from the in-browser equivalent of <code>GET /houses/:id/readings</code>.</p>
+              </div>
+              <div class="actions">
+                <button class="ghost tiny" id="load-readings">Mock GET readings</button>
+                <button class="ghost tiny" id="load-summary">Mock GET summary</button>
+              </div>
+            </div>
+            <div id="readings-banner" class="status-banner neutral">Ready to inspect the seeded house data.</div>
+            <div class="table-wrap" style="margin-top: 14px;">
+              <table>
+                <thead>
+                  <tr><th>Timestamp</th><th>kWh</th><th>Day</th><th>Action</th></tr>
+                </thead>
+                <tbody id="readings-table"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-header">
+              <div>
+                <h2>Daily averages</h2>
+                <p>Computed from the same grouped-by-day logic as the finished summary endpoint.</p>
+              </div>
+            </div>
+            <div class="daily-grid" id="daily-grid"></div>
+          </section>
+        </div>
+
+        <div class="stack">
+          <section class="panel">
+            <div class="section-header">
+              <div>
+                <h2>Summary</h2>
+                <p>Total, average, count, and daily averages for the selected house.</p>
+              </div>
+            </div>
+            <div id="summary-panel"></div>
+          </section>
+
+          <section class="panel">
+            <h2>Date range filter</h2>
+            <p class="muted">Validates ISO timestamps and rejects cases where <code>from</code> is after <code>to</code>.</p>
+            <form id="filter-form">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="filter-from">From</label>
+                  <input id="filter-from" name="from" type="datetime-local" step="1" />
+                </div>
+                <div class="field">
+                  <label for="filter-to">To</label>
+                  <input id="filter-to" name="to" type="datetime-local" step="1" />
+                </div>
+              </div>
+              <div class="actions">
+                <button type="submit">Apply range</button>
+                <button class="ghost" type="button" id="clear-range">Clear</button>
+                <button class="ghost" type="button" id="invalid-range-test">Trigger invalid range</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="panel">
+            <h2>Add reading</h2>
+            <p class="muted">Replicates <code>POST /houses/:id/readings</code> validation for timestamp and positive finite kWh.</p>
+            <form id="reading-form">
+              <div class="form-grid">
+                <div class="field full">
+                  <label for="reading-house">House</label>
+                  <select id="reading-house" name="houseId"></select>
+                </div>
+                <div class="field">
+                  <label for="reading-timestamp">Timestamp</label>
+                  <input id="reading-timestamp" name="timestamp" type="datetime-local" step="1" required />
+                </div>
+                <div class="field">
+                  <label for="reading-kwh">kWh</label>
+                  <input id="reading-kwh" name="kwh" type="number" min="0.1" step="0.1" placeholder="1.8" required />
+                </div>
+              </div>
+              <div class="actions">
+                <button type="submit">Store reading</button>
+                <button class="ghost" type="button" id="invalid-reading-test">Trigger invalid kWh</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="panel">
+            <h2>Live service responses</h2>
+            <p class="muted">Mock HTTP status and JSON body from the same in-browser service rules.</p>
+            <div class="two-column">
+              <div class="response-box"><pre id="energy-response"></pre></div>
+              <div class="log-box"><pre id="energy-log"></pre></div>
+            </div>
+          </section>
+        </div>
       </section>
 
       <section class="links">
@@ -42,5 +143,401 @@ npm run dev</code></pre>
         <a href="https://github.com/Knowit-Objectnet/sor-workshop-20260608/pull/4">Upstream PR #4</a>
       </section>
     </main>
+
+    <script>
+      function createSeedReadings() {
+        const seedKwh = [0.4, 0.3, 0.3, 0.4, 0.5, 0.7, 1.2, 1.8, 2.1, 1.9, 1.5, 1.4, 1.6, 1.7, 1.5, 1.4, 1.6, 2, 2.5, 3, 3.5, 2.8, 1.8, 0.9];
+        const base = new Date("2026-06-08T23:00:00.000Z");
+        return seedKwh.map((kwh, index) => {
+          const timestamp = new Date(base);
+          timestamp.setUTCHours(base.getUTCHours() - (23 - index), 0, 0, 0);
+          return {
+            id: "reading-seed-" + String(index).padStart(2, "0"),
+            houseId: "house-001",
+            timestamp: timestamp.toISOString(),
+            kwh,
+          };
+        });
+      }
+
+      const state = {
+        houses: [
+          { id: "house-001", address: "12 Maple Street, Oslo", ownerId: "owner-a" },
+          { id: "house-002", address: "7 Birch Lane, Bergen", ownerId: "owner-b" },
+          { id: "house-003", address: "3 Oak Avenue, Trondheim", ownerId: "owner-c" },
+        ],
+        readings: createSeedReadings(),
+        selectedHouseId: "house-001",
+        filters: { from: "", to: "" },
+        response: { method: "GET", path: "/houses", status: 200, body: [] },
+        log: ["Loaded seeded houses and hourly readings from the Block C solution."],
+      };
+
+      function createValidationError(message) {
+        const error = new Error(message);
+        error.status = 400;
+        error.code = "VALIDATION_ERROR";
+        return error;
+      }
+
+      function createNotFoundError(message, code) {
+        const error = new Error(message);
+        error.status = 404;
+        error.code = code;
+        return error;
+      }
+
+      function isValidIsoTimestamp(value) {
+        const isoTimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
+        if (!isoTimestampPattern.test(value)) {
+          return false;
+        }
+        const normalizedValue = value.includes(".") ? value : value.replace("Z", ".000Z");
+        const parsed = new Date(value);
+        return !Number.isNaN(parsed.getTime()) && parsed.toISOString() === normalizedValue;
+      }
+
+      function validateTimestamp(value, fieldName) {
+        if (typeof value !== "string" || !isValidIsoTimestamp(value)) {
+          throw createValidationError(fieldName + " must be a valid ISO timestamp");
+        }
+      }
+
+      function validateReadingRange(from, to) {
+        if (from !== undefined) {
+          validateTimestamp(from, "from");
+        }
+        if (to !== undefined) {
+          validateTimestamp(to, "to");
+        }
+        if (from !== undefined && to !== undefined && new Date(from).getTime() > new Date(to).getTime()) {
+          throw createValidationError("from must be before to");
+        }
+      }
+
+      function validateCreateReading(input) {
+        validateTimestamp(input.timestamp, "timestamp");
+        if (typeof input.kwh !== "number" || !Number.isFinite(input.kwh) || input.kwh <= 0) {
+          throw createValidationError("kwh must be a positive finite number");
+        }
+      }
+
+      function getHouseById(id) {
+        return state.houses.find((house) => house.id === id);
+      }
+
+      function requireHouse(id) {
+        const house = getHouseById(id);
+        if (!house) {
+          throw createNotFoundError("House not found", "HOUSE_NOT_FOUND");
+        }
+        return { ...house };
+      }
+
+      function getReadingsForHouse(houseId) {
+        return state.readings.filter((reading) => reading.houseId === houseId).map((reading) => ({ ...reading }));
+      }
+
+      function getReadingsForHouseInRange(houseId, from, to) {
+        validateReadingRange(from, to);
+        const fromTime = from ? new Date(from).getTime() : undefined;
+        const toTime = to ? new Date(to).getTime() : undefined;
+        return getReadingsForHouse(houseId).filter((reading) => {
+          const readingTime = new Date(reading.timestamp).getTime();
+          return (fromTime === undefined || readingTime >= fromTime) && (toTime === undefined || readingTime <= toTime);
+        });
+      }
+
+      function getReadingSummaryForHouse(houseId) {
+        const houseReadings = getReadingsForHouse(houseId);
+        const total = houseReadings.reduce((sum, reading) => sum + reading.kwh, 0);
+        const count = houseReadings.length;
+        const average = count > 0 ? total / count : 0;
+        const dailyMap = new Map();
+
+        houseReadings.forEach((reading) => {
+          const date = reading.timestamp.slice(0, 10);
+          const dayReadings = dailyMap.get(date) || [];
+          dayReadings.push(reading);
+          dailyMap.set(date, dayReadings);
+        });
+
+        const dailyAverages = Array.from(dailyMap.entries())
+          .sort(([left], [right]) => left.localeCompare(right))
+          .map(([date, dayReadings]) => {
+            const dayTotal = dayReadings.reduce((sum, reading) => sum + reading.kwh, 0);
+            return {
+              date,
+              total: dayTotal,
+              average: dayTotal / dayReadings.length,
+              count: dayReadings.length,
+            };
+          });
+
+        return { total, average, count, dailyAverages };
+      }
+
+      function addReading(input) {
+        requireHouse(input.houseId);
+        validateCreateReading(input);
+        const reading = {
+          id: "reading-" + Math.random().toString(16).slice(2, 10),
+          houseId: input.houseId,
+          timestamp: input.timestamp,
+          kwh: input.kwh,
+        };
+        state.readings.push(reading);
+        return { ...reading };
+      }
+
+      function deleteReading(id) {
+        const index = state.readings.findIndex((reading) => reading.id === id);
+        if (index === -1) {
+          throw createNotFoundError("Reading not found", "READING_NOT_FOUND");
+        }
+        state.readings.splice(index, 1);
+      }
+
+      function setResponse(method, path, status, body) {
+        state.response = { method, path, status, body };
+      }
+
+      function addLog(line) {
+        state.log.unshift(new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) + "  " + line);
+        state.log = state.log.slice(0, 10);
+      }
+
+      function safeRun(request, action) {
+        try {
+          const body = action();
+          setResponse(request.method, request.path, request.status, body);
+          addLog(request.method + " " + request.path + " -> " + request.status);
+        } catch (error) {
+          setResponse(request.method, request.path, error.status || 500, { error: error.message, code: error.code || "INTERNAL_ERROR" });
+          addLog(request.method + " " + request.path + " -> " + (error.status || 500) + " " + error.message);
+        }
+        render();
+      }
+
+      function formatKwh(value) {
+        return value.toFixed(2) + " kWh";
+      }
+
+      function toIsoFromLocal(value) {
+        if (!value) {
+          return undefined;
+        }
+        const parsed = new Date(value);
+        return Number.isNaN(parsed.getTime()) ? value : parsed.toISOString();
+      }
+
+      function filteredReadings() {
+        requireHouse(state.selectedHouseId);
+        return getReadingsForHouseInRange(
+          state.selectedHouseId,
+          state.filters.from || undefined,
+          state.filters.to || undefined
+        ).sort((left, right) => right.timestamp.localeCompare(left.timestamp));
+      }
+
+      function renderStats() {
+        const totalReadings = state.readings.length;
+        const selectedSummary = getReadingSummaryForHouse(state.selectedHouseId);
+        document.getElementById("energy-stats").innerHTML = [
+          { label: "Houses", value: state.houses.length },
+          { label: "Stored readings", value: totalReadings },
+          { label: "Selected total", value: formatKwh(selectedSummary.total) },
+          { label: "Selected average", value: formatKwh(selectedSummary.average) },
+        ].map((item) => '<article class="metric"><span>' + item.label + '</span><strong>' + item.value + "</strong></article>").join("");
+      }
+
+      function renderHouses() {
+        const houseGrid = document.getElementById("house-grid");
+        houseGrid.innerHTML = state.houses.map((house) => {
+          const summary = getReadingSummaryForHouse(house.id);
+          return `
+            <article class="house-card ${house.id === state.selectedHouseId ? "selected" : ""}">
+              <header>
+                <div>
+                  <h3>${house.address}</h3>
+                  <p>${house.id}</p>
+                </div>
+                <span class="tag ${summary.count ? "ok" : "warn"}">${summary.count ? summary.count + " readings" : "No readings"}</span>
+              </header>
+              <div class="tag-row">
+                <span class="chip">Owner ${house.ownerId}</span>
+                <span class="chip">${formatKwh(summary.total)}</span>
+              </div>
+              <footer>
+                <span>${summary.dailyAverages.length} active day buckets</span>
+                <button class="tiny" data-house-select="${house.id}">Inspect</button>
+              </footer>
+            </article>
+          `;
+        }).join("");
+      }
+
+      function renderSummary() {
+        const summary = getReadingSummaryForHouse(state.selectedHouseId);
+        const house = requireHouse(state.selectedHouseId);
+        document.getElementById("summary-panel").innerHTML = `
+          <div class="info-grid">
+            <article class="info-box"><span>House</span><strong>${house.address}</strong></article>
+            <article class="info-box"><span>Reading count</span><strong>${summary.count}</strong></article>
+            <article class="info-box"><span>Total usage</span><strong>${formatKwh(summary.total)}</strong></article>
+            <article class="info-box"><span>Average usage</span><strong>${formatKwh(summary.average)}</strong></article>
+          </div>
+        `;
+      }
+
+      function renderFilteredReadings() {
+        const banner = document.getElementById("readings-banner");
+        const house = requireHouse(state.selectedHouseId);
+        const from = state.filters.from ? state.filters.from : "start";
+        const to = state.filters.to ? state.filters.to : "latest";
+        document.getElementById("range-copy").textContent = "Current house: " + house.address + ". Active range: " + from + " to " + to + ".";
+        const entries = filteredReadings();
+        banner.className = "status-banner " + (entries.length ? "ok" : "neutral");
+        banner.textContent = entries.length ? entries.length + " readings match the current range." : "No readings match the current range.";
+        document.getElementById("readings-table").innerHTML = entries.length ? entries.map((reading) => `
+          <tr>
+            <td>${reading.timestamp}</td>
+            <td>${formatKwh(reading.kwh)}</td>
+            <td>${reading.timestamp.slice(0, 10)}</td>
+            <td><button class="tiny ghost" data-delete-reading="${reading.id}">Delete</button></td>
+          </tr>
+        `).join("") : '<tr><td colspan="4">No readings in this range.</td></tr>';
+      }
+
+      function renderDailyCards() {
+        const entries = getReadingSummaryForHouse(state.selectedHouseId).dailyAverages;
+        document.getElementById("daily-grid").innerHTML = entries.length ? entries.map((entry) => `
+          <article class="daily-card">
+            <h3>${entry.date}</h3>
+            <p>${entry.count} readings</p>
+            <div class="big-number">${formatKwh(entry.average)}</div>
+            <p>Total ${formatKwh(entry.total)}</p>
+          </article>
+        `).join("") : '<div class="empty">No daily averages yet for this house.</div>';
+      }
+
+      function renderForms() {
+        document.getElementById("reading-house").innerHTML = state.houses.map((house) => `
+          <option value="${house.id}" ${house.id === state.selectedHouseId ? "selected" : ""}>${house.address}</option>
+        `).join("");
+      }
+
+      function renderResponse() {
+        document.getElementById("energy-response").textContent = JSON.stringify(state.response, null, 2);
+        document.getElementById("energy-log").textContent = state.log.join("\n");
+      }
+
+      function render() {
+        renderStats();
+        renderHouses();
+        renderSummary();
+        renderFilteredReadings();
+        renderDailyCards();
+        renderForms();
+        renderResponse();
+      }
+
+      document.getElementById("house-grid").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-house-select]");
+        if (!button) {
+          return;
+        }
+        state.selectedHouseId = button.getAttribute("data-house-select");
+        safeRun({ method: "GET", path: "/houses/" + state.selectedHouseId, status: 200 }, () => requireHouse(state.selectedHouseId));
+      });
+
+      document.getElementById("load-readings").addEventListener("click", () => {
+        safeRun(
+          { method: "GET", path: "/houses/" + state.selectedHouseId + "/readings", status: 200 },
+          () => filteredReadings()
+        );
+      });
+
+      document.getElementById("load-summary").addEventListener("click", () => {
+        safeRun(
+          { method: "GET", path: "/houses/" + state.selectedHouseId + "/readings/summary", status: 200 },
+          () => getReadingSummaryForHouse(state.selectedHouseId)
+        );
+      });
+
+      document.getElementById("filter-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const from = toIsoFromLocal(String(formData.get("from") || ""));
+        const to = toIsoFromLocal(String(formData.get("to") || ""));
+        safeRun(
+          { method: "GET", path: "/houses/" + state.selectedHouseId + "/readings?from=" + (from || "") + "&to=" + (to || ""), status: 200 },
+          () => {
+            validateReadingRange(from, to);
+            state.filters.from = from || "";
+            state.filters.to = to || "";
+            return filteredReadings();
+          }
+        );
+      });
+
+      document.getElementById("clear-range").addEventListener("click", () => {
+        state.filters = { from: "", to: "" };
+        document.getElementById("filter-form").reset();
+        safeRun(
+          { method: "GET", path: "/houses/" + state.selectedHouseId + "/readings", status: 200 },
+          () => filteredReadings()
+        );
+      });
+
+      document.getElementById("invalid-range-test").addEventListener("click", () => {
+        safeRun(
+          { method: "GET", path: "/houses/" + state.selectedHouseId + "/readings?from=bad&to=2026-06-08T20:00:00.000Z", status: 200 },
+          () => getReadingsForHouseInRange(state.selectedHouseId, "bad", "2026-06-08T20:00:00.000Z")
+        );
+      });
+
+      document.getElementById("reading-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const houseId = String(formData.get("houseId"));
+        const timestamp = toIsoFromLocal(String(formData.get("timestamp") || ""));
+        const kwh = Number(formData.get("kwh"));
+        safeRun(
+          { method: "POST", path: "/houses/" + houseId + "/readings", status: 201 },
+          () => {
+            state.selectedHouseId = houseId;
+            const reading = addReading({ houseId, timestamp, kwh });
+            event.currentTarget.reset();
+            state.filters = { from: "", to: "" };
+            return reading;
+          }
+        );
+      });
+
+      document.getElementById("invalid-reading-test").addEventListener("click", () => {
+        safeRun(
+          { method: "POST", path: "/houses/" + state.selectedHouseId + "/readings", status: 201 },
+          () => addReading({ houseId: state.selectedHouseId, timestamp: "2026-06-08T09:00:00.000Z", kwh: Infinity })
+        );
+      });
+
+      document.getElementById("readings-table").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-delete-reading]");
+        if (!button) {
+          return;
+        }
+        const readingId = button.getAttribute("data-delete-reading");
+        safeRun(
+          { method: "DELETE", path: "/readings/" + readingId, status: 204 },
+          () => {
+            deleteReading(readingId);
+            return null;
+          }
+        );
+      });
+
+      safeRun({ method: "GET", path: "/houses/house-001/readings/summary", status: 200 }, () => getReadingSummaryForHouse("house-001"));
+    </script>
   </body>
 </html>
