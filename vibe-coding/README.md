@@ -12,7 +12,7 @@ A React + TypeScript frontend with four parking zones (P1, P2, P3, EXPRESS). The
 cd vibe-coding/app
 npm install
 npm run dev
-# App at http://localhost:5173
+# App at http://localhost:3000
 ```
 
 ## Your task
